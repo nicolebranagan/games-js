@@ -64,6 +64,7 @@ class Application(tk.Frame):
         self.master.bind("<Down>", lambda x: self.movegrid(0, 1))
         self.master.bind("<Left>", lambda x: self.movegrid(-1, 0))
         self.master.bind("<Right>", lambda x: self.movegrid(1, 0))
+        self.master.bind("<Delete>", self.delgrid)
         
         self.tilecanvas = tk.Canvas(self, width=self.tiles.width,
                                     height=self.tiles.height)
@@ -75,15 +76,22 @@ class Application(tk.Frame):
         self.gridcanvas = tk.Canvas(self, width=320, height=320)
         self.gridcanvas.grid(row=1, column=0)
         self.gridcanvasimage = self.gridcanvas.create_image(0,0,anchor=tk.NW)
+        self.gridcanvas.bind("<Button-1>", self.gridclick)
 
-        self.viewcanvas = tk.Canvas(self, width=160*2, height=(144-16)*2)
-        self.viewcanvas.grid(row=1, column=1)
+        viewpanel = tk.Frame(self)
+        viewpanel.grid(row=1, column=1)
+        self.viewcanvas = tk.Canvas(viewpanel, width=160*2, height=(144-16)*2)
+        self.viewcanvas.grid(row=0, column=0,columnspan=2)
         self.viewcanvasimage = self.viewcanvas.create_image(0,0,anchor=tk.NW)
         self.viewcanvas.bind("<Button-1>", self.viewclick)
         self.viewcanvas.bind("<B1-Motion>", self.viewclick)
         self.viewcanvas.bind("<Motion>", self.viewmove)
         self.viewcanvas.bind("<Button-2>", self.cviewclick)
         self.viewcanvas.bind("<Button-3>", self.rviewclick)
+        self.spinner = tk.Spinbox(viewpanel, from_=0, to=99, 
+                             command=lambda *x: 
+                             self.room.setarea(int(self.spinner.get())))
+        self.spinner.grid(row=1, column=0)
 
         self.objectview = []
 
@@ -235,15 +243,26 @@ class Application(tk.Frame):
         self.statusbar.config(
                 text="Coordinates: {}, {}".format(clickX, clickY))
 
-    def movegrid(self, x, y):
-        newx = self.currentx + x
-        newy = self.currenty + y
+    def gridclick(self, event):
+        clickX = math.floor(self.gridcanvas.canvasx(event.x) / 20)
+        clickY = math.floor(self.gridcanvas.canvasy(event.y) / 20)
+        self.movegrid(clickX, clickY, False)
+
+    def movegrid(self, x, y, relative=True):
+        if relative:
+            newx = self.currentx + x
+            newy = self.currenty + y
+        else:
+            newx = x
+            newy = y
 
         if (newx >= 0 and newx < 16 and
             newy >= 0 and newy < 16):
             self.currentx = newx
             self.currenty = newy
             self.room = self.roomset.getroom(self.currentx, self.currenty)
+            self.spinner.delete(0,"end")
+            self.spinner.insert(0,self.room.area)
             self.drawgrid(self.currentx, self.currenty)
             self.drawroom()
             self.objectlist.delete(0, tk.END)
@@ -256,6 +275,10 @@ class Application(tk.Frame):
                 else:
                     self.objectlist.insert(
                         i, "{}: {}, {}".format(Type[x[0]], x[1], x[2]))
+
+    def delgrid(self, *args):
+        self.roomset.delroom(self.currentx, self.currenty)
+        self.movegrid(0,0,False)
 
     def save(self):
         filen = filedialog.asksaveasfilename(
@@ -343,6 +366,7 @@ class Room:
         self.width = 10
         self.height = 8
         self.tileset = tileset
+        self.area = 0
         self.tiles = [0 for x in range(0,self.width*self.height)]
         self.objects = []
 
@@ -356,6 +380,9 @@ class Room:
             return 0
         return self.tiles[x + y*self.width]
 
+    def setarea(self, x):
+        self.area = x
+
     def draw(self):
         image = Image.new("RGB",(self.width*32, self.height*32))
         i = 0
@@ -367,13 +394,15 @@ class Room:
 
     def dump(self):
         return {"tiles": self.tiles,
-                "objects": self.objects}
+                "objects": self.objects,
+                "area": self.area}
 
     @staticmethod
     def load(loaded, tileset):
         self = Room(tileset)
         self.tiles = loaded["tiles"]
         self.objects = loaded["objects"]
+        self.area = loaded["area"]
         return self
 
 class RoomGrid:
@@ -387,6 +416,9 @@ class RoomGrid:
         if self.rooms[x + self.l * y] == 0:
             self.rooms[x + self.l * y] = Room(self.tileset)
         return self.rooms[x + self.l * y]
+
+    def delroom(self, x, y):
+        self.rooms[x + self.l * y] = 0
 
     def draw(self, x=-1, y=-1):
         image = tk.PhotoImage(width=self.l*64, height=self.l*64)

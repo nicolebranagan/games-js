@@ -7,6 +7,8 @@ Arbitrary = function(invar) {
         Game.blocks.push(new wideDoor(invar, true));
     } else if (invar[0] == 202) {
         Game.blocks.push(new wideDoor(invar, false));
+    } else if (invar[0] == 203) {
+        Game.objects.push(getTalkOnEnter(invar, ["I found myself lost in this strange cave.", "I don't remember how I got here, I don't remember who I am...", "What happened?"]));
     }
 }
 
@@ -134,4 +136,51 @@ wideDoor.prototype = {
         }
         return true;
     }
+}
+
+getTalker = function(invar, row, text) {
+    talker = new GameObject();
+    talker.x = invar[1] * 16 + 8;
+    talker.y = invar[2] * 16 + 8;
+    talker.invar = invar;
+    talker.row = row;
+    talker.text = text;
+    talker.animate = true;
+    talker.collect = function() { Game.player.recoil(); }
+    talker.speak = function() { 
+        switch (Game.player.direction) {
+            case 0:
+                this.direction = 1;
+                break;
+            case 1:
+                this.direction = 0;
+                break;
+            case 2:
+                this.direction = 3;
+                break;
+            case 3:
+                this.direction = 2;
+                break;
+        }
+        Game.textBox(this.text); 
+        
+    };
+    return talker;
+}
+
+getTalkOnEnter = function(invar, text) {
+    talker = new GameObject();
+    talker.x = 0;
+    talker.y = 0;
+    talker.invar = invar;
+    talker.row = -1;
+    talker.text = text;
+    talker.update = function() {
+        if (this.invar[3]) {
+            Game.textBox(text);
+            this.invar[3] = false;
+            this.active = false;
+        }
+    };
+    return talker;
 }

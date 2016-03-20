@@ -44,7 +44,7 @@ Game.reset = function(newgame) {
     
     if (newgame) {
         // Prepare blank snapshot;
-        this.snapshot = { x: this.player.x, y: this.player.y, aspect: 0, roomx: 0, roomy: 0, keys: 0, crystals: 0, objects: [] }
+        this.snapshot = { x: this.player.x, y: this.player.y, aspect: 0, roomx: 1, roomy: 0, keys: 0, crystals: 0, objects: [] }
         for(var i=0; i < worldfile.rooms.length; i++) {
             var e = worldfile.rooms[i]
             if (e != 0) {
@@ -104,7 +104,8 @@ Game.loadroom = function(x, y) {
     this.roomy = y;
     this.x = x;
     this.y = y;
-    this.tileMap = worldfile.rooms[x + y * 16].tiles
+    this.tileMap = worldfile.rooms[x + y * 16].tiles;
+    this.area = worldfile.rooms[x + y * 16].area;
 
     this.objects = new Array();
     this.blocks = new Array();
@@ -155,8 +156,21 @@ Game.update = function() {
         if (this.shootLag <= 0) {
             if (Controls.Shoot) {
                 this.shootLag = 50;
-                PlaySound("pew");
-                this.objects.push(new Projectile(this.player.x, this.player.y, this.player.direction, this.player.aspect));
+                var spoke = false;
+                for(var i = 0; i < Game.objects.length; i++) {
+                    var e = Game.objects[i];
+                    if ((e.x-Game.player.x)*(e.x-Game.player.x) + (e.y-Game.player.y)*(e.y-Game.player.y) < 24*24) {
+                        if (e.speak) {
+                            e.speak();
+                            spoke=true;
+                            break;
+                        }
+                    }
+                }
+                if (!spoke) {
+                    PlaySound("pew");
+                    this.objects.push(new Projectile(this.player.x, this.player.y,  this.player.direction, this.player.aspect));
+                }
             }
         } else
             this.shootLag = this.shootLag - 1;
@@ -270,7 +284,6 @@ Game.drawUI = function(ctx) {
 
 Game.textBox = function(text) {
     var newtext = [];
-    console.log(text);
     for(var i=0; i < text.length; i++) {
         var str = "";
         var words = text[i].split(" ");
@@ -422,6 +435,24 @@ GameObject.prototype = {
         if (oldaspect != this.aspect)
             PlaySound("aspect")
     },
+    
+    recoil: function(x, y, dir) {
+        if (!dir) dir = this.direction;
+        switch (dir) {
+            case 0:
+                this.move(0, -1);
+                break;
+            case 1:
+                this.move(0, 1);
+                break;
+            case 2:
+                this.move(1, 0);
+                break;
+            case 3:
+                this.move(-1, 0);
+                break;
+        }
+    },
 
     collect: function() {}
 }
@@ -483,6 +514,7 @@ Enemy.prototype.update = function() {
         }
     }
 };
+
 Enemy.prototype.collect = function() {
     Game.mode = GameStage.DieMode;
     Game.animCount = 512;
