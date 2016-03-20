@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Aspect Star W</title>
+<style>
+body {background-color: #000}
+#holderdiv { background-color: #000; height: 100%; }
+#gamecanvas { width: 100%;}
+#gamecontrols { width: 100%; display:none; -webkit-touch-callout: none !important; }
+@media all and (min-width:800px) {
+	#holderdiv { width: 800px; height: 480px; margin-left: auto; margin-right: auto;}
+	#gamecanvas { width: 800px; }
+}
+@media all and (max-width:400px) {
+	#gamecanvas { width: 400px; }
+}
+</style>
+</head>
+
+<body bgcolor=#FFF >
+
+<div id="holderdiv">
+<canvas id="gamecanvas" width="400" height="240"></canvas>
+</div>
+
+<div id="holderdiv2">
+<img SRC="./images/controller.png" id="gamecontrols">
+</div>
+
+<script type="text/javascript" src="game.js"></script>
+<script type="text/javascript" src="master.js"></script>
+
+</body>
+
+</html>
