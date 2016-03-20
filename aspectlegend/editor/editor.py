@@ -111,7 +111,7 @@ class Application(tk.Frame):
         self.selectedblock.set(Type[100])
         tk.OptionMenu(
                 controls, self.selectedblock, 
-                *[Type[x] for x in range(100,108)]).grid(
+                *[Type[x] for x in range(100,109)]).grid(
                     row=4, column=0)
         addblockbutton = tk.Button(controls, text="Add", 
                                    command=lambda: self.addobject(
@@ -122,7 +122,7 @@ class Application(tk.Frame):
         self.selectedenemy.set(Type[0])
         tk.OptionMenu(
                 controls, self.selectedenemy, 
-                *[Type[x] for x in range(0,11)]).grid(
+                *[Type[x] for x in range(0,12)]).grid(
                     row=5, column=0)
         addenemybutton = tk.Button(controls, text="Add",
                                    command=lambda: self.addobject(

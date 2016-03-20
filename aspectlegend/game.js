@@ -736,7 +736,6 @@ function Block(invar) {
         this.collide = function() {
             if (this.active && this.splitTimer == 0) {
                 if (Game.keys > 0) {
-                    console.log(Game.keys);
                     Game.keys--;
                     this.invar[3] = false;
                     this.splitTimer = 8;
