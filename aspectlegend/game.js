@@ -44,7 +44,7 @@ Game.reset = function(newgame) {
     
     if (newgame) {
         // Prepare blank snapshot;
-        this.snapshot = { x: this.player.x, y: this.player.y, aspect: 0, roomx: 1, roomy: 0, keys: 0, crystals: 0, objects: [] }
+        this.snapshot = { x: this.player.x, y: this.player.y, aspect: 0, roomx: 3, roomy: 3, keys: 0, crystals: 0, objects: [] }
         for(var i=0; i < worldfile.rooms.length; i++) {
             var e = worldfile.rooms[i]
             if (e != 0) {
@@ -65,7 +65,7 @@ Game.reset = function(newgame) {
 Game.reload = function() {
     this.shootLag = 0;
     this.lag = 0;
-    
+    this.player.direction = 0;
     this.player.x = this.snapshot.x;
     this.player.y = this.snapshot.y;
     this.player.aspect = this.snapshot.aspect;
@@ -351,8 +351,8 @@ Game.squareSolid = function(x, y, self) {
 // GameObject
 function GameObject() {
     this.active = true;
-    this.x = 4 * 16 - 8;
-    this.y = 7 * 16 - 8;
+    this.x = 5 * 16;
+    this.y = 3 * 16 + 8;
     this.currentFrame = 0;
     this.stallCount = 0;
     this.moving = false;
@@ -371,7 +371,8 @@ GameObject.prototype = {
     draw: function(ctx) {
         // Slice image
         ctx.drawImage(Game.objectimage, 16 * (2 * this.direction + this.currentFrame + this.offset), this.row * 16, 16, 16, this.x - 8, this.y - 8, 16, 16);
-        ctx.drawImage(Game.objectimage, 128 + 8 * this.aspect, 0, 8, 8, this.x - 4, this.y - 16, 8, 8)
+        if (this.aspect != -1 && Game.area != 0)
+            ctx.drawImage(Game.objectimage, 128 + 8 * this.aspect, 0, 8, 8, this.x - 4, this.y - 16, 8, 8)
     },
     
     animate: false,

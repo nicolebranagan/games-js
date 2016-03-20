@@ -275,6 +275,8 @@ class Application(tk.Frame):
                 else:
                     self.objectlist.insert(
                         i, "{}: {}, {}".format(Type[x[0]], x[1], x[2]))
+            self.statusbar.config(
+                    text="Loaded room X:{}, Y:{}".format(newx, newy))
 
     def delgrid(self, *args):
         self.roomset.delroom(self.currentx, self.currenty)

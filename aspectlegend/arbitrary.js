@@ -9,6 +9,30 @@ Arbitrary = function(invar) {
         Game.blocks.push(new wideDoor(invar, false));
     } else if (invar[0] == 203) {
         Game.objects.push(getTalkOnEnter(invar, ["I found myself lost in this strange cave.", "I don't remember how I got here, I don't remember who I am...", "What happened?"]));
+    } else if (invar[0] == 204) {
+        Game.objects.push(getTalker(invar, 1, ["Meow!", "Talking to the cat reminds you of something.", "Three symbols, but why and what is their purpose?"], true));
+    } else if (invar[0] == 205) {
+        var runner = getTalker(invar, 1, ["Meow!", "I realized that this strange symbol will allow me to restore my progress.", "But did I realize it, or did the cat tell me?"], false);
+        runner._speak = runner.speak;
+        runner.running = false;
+        runner.direction = 3;
+        runner.speed = 2;
+        runner.speak = function() {
+            if (!this.moving) {
+                this._speak();
+                this.moving = true;
+            }
+        }
+        runner.update = function() {
+            if (this.moving)
+                this.direction = 2;
+            this._update();
+        }
+        runner.boundscheck = function() {
+            this.active = false;
+            this.invar[3] = false;
+        }
+        Game.objects.push(runner);
     }
 }
 
@@ -138,12 +162,15 @@ wideDoor.prototype = {
     }
 }
 
-getTalker = function(invar, row, text) {
+getTalker = function(invar, row, text, disappear) {
     talker = new GameObject();
     talker.x = invar[1] * 16 + 8;
     talker.y = invar[2] * 16 + 8;
+    talker.disappear = disappear;
     talker.invar = invar;
+    talker.active = invar[3];
     talker.row = row;
+    talker.aspect = -1;
     talker.text = text;
     talker.animate = true;
     talker.collect = function() { Game.player.recoil(); }
@@ -162,8 +189,10 @@ getTalker = function(invar, row, text) {
                 this.direction = 2;
                 break;
         }
+        if (this.disappear) {
+            this.invar[3] = false;
+        }
         Game.textBox(this.text); 
-        
     };
     return talker;
 }
@@ -174,6 +203,7 @@ getTalkOnEnter = function(invar, text) {
     talker.y = 0;
     talker.invar = invar;
     talker.row = -1;
+    talker.aspect = -1;
     talker.text = text;
     talker.update = function() {
         if (this.invar[3]) {
