@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Aspect Legend</title>
+<style>
+body {background-color: #000;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -o-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    -ms-interpolation-mode: nearest-neighbor;
+    image-rendering: pixelated;}
+#holderdiv { height: 100%;}
+#holderdiv2 {color: #FFF; font-size: 8pt; text-align: center;}
+#gamecanvas { width: 320px; height: 288px; background-color: #b8d880;}
+#gamecontrols { width: 100%; display:none; overflow:hidden; -webkit-touch-callout: none !important; }
+/*@media all and (min-width:1280px) {
+	#holderdiv { width: 1280px; height: 1152px; margin-left: auto; margin-right: auto;}
+}
+@media all and (max-width:640px) and (min-width:640px) {
+	#holderdiv { width: 640px; height: 576px; margin-left: auto; margin-right: auto;}
+}
+@media all and (max-width:320px) {
+	#gamecanvas { width: 320px; height: 288px }*/
+}
+</style>
+</head>
+
+<body bgcolor=#FFF>
+
+<center><div id="holderdiv">
+<canvas id="gamecanvas" width="160" height="144"></canvas>
+</div></center>
+
+<div id="holderdiv2">
+<br><br>Press start to begin; arrow keys or WASD to move; space button to sound your horn.
+<br>Tap game screen area to activate touchscreen controls.
+</div>
+<img SRC="./images/controller.png" id="gamecontrols">
+
+<script type="text/javascript" src="game.js"></script>
+<script type="text/javascript" src="master.js"></script>
+<script type="text/javascript" src="sound.js"></script>
+<script type="text/javascript" src="arbitrary.js"></script>
+
+</body>
+
+</html>
