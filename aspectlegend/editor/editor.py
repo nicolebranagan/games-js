@@ -25,9 +25,7 @@ TypeLabel = {
     "Block o" : 103,
     "Save" : 104,
     "Key" : 105,
-    "Cryslock" : 106,
-    "Crystal" : 107,
-    "Lock": 108}
+    "Lock": 106}
 Type = {v: k for k, v in TypeLabel.items()}
 
 class Application(tk.Frame):
@@ -119,7 +117,7 @@ class Application(tk.Frame):
         self.selectedblock.set(Type[100])
         tk.OptionMenu(
                 controls, self.selectedblock, 
-                *[Type[x] for x in range(100,109)]).grid(
+                *[Type[x] for x in range(100,107)]).grid(
                     row=4, column=0)
         addblockbutton = tk.Button(controls, text="Add", 
                                    command=lambda: self.addobject(
@@ -191,7 +189,7 @@ class Application(tk.Frame):
                 self.objectview.append(
                         self.viewcanvas.create_image(
                             x[1]*32+16, x[2]*32+16, 
-                            image=self.tilesetTk[x[0]-93]))
+                            image=self.tilesetTk[x[0]-100+9]))
                 self.objectview.append(
                         self.viewcanvas.create_rectangle(
                             x[1]*32, x[2]*32, x[1]*32+32-1, x[2]*32+32-1,

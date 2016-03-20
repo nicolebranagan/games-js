@@ -65,7 +65,6 @@ Game.reset = function(newgame) {
 Game.reload = function() {
     this.shootLag = 0;
     this.lag = 0;
-    this.player.direction = 0;
     this.player.x = this.snapshot.x;
     this.player.y = this.snapshot.y;
     this.player.aspect = this.snapshot.aspect;
@@ -278,8 +277,8 @@ Game.drawUI = function(ctx) {
     drawNumber(ctx, 9*8, 144-8, this.keys, 2);
     drawNumber(ctx, 16*8, 144-8, this.crystals, 2);
     // draw keys, crystals
-    ctx.drawImage(Game.bgimage, 12 * 16, 0, 16, 16, 6*8, 144-16, 16, 16);
-    ctx.drawImage(Game.bgimage, 14 * 16, 0, 16, 16, 13*8, 144-16, 16, 16);
+    ctx.drawImage(Game.objectimage, 11 * 16, 0, 16, 16, 6*8, 144-16, 16, 16);
+    ctx.drawImage(Game.objectimage, 12 * 16, 0, 16, 16, 13*8, 144-16, 16, 16);
 }
 
 Game.textBox = function(text) {
@@ -765,7 +764,7 @@ function Block(invar) {
             }
             return false;
         }
-    } else if (this.type == 108) {
+    } else if (this.type == 106) {
         this.collide = function() {
             if (this.active && this.splitTimer == 0) {
                 if (Game.keys > 0) {
@@ -782,10 +781,10 @@ function Block(invar) {
 Block.prototype = {
     draw: function(ctx) {
         if (this.splitTimer != 0) {
-            ctx.drawImage(Game.bgimage, (7+(this.type-100)) * 16, 0, 8, 16, this.x - 8 - (8-this.splitTimer), this.y - 8, 8, 16)
-            ctx.drawImage(Game.bgimage, (7+(this.type-100)) * 16 + 8, 0, 8, 16, this.x + (8-this.splitTimer), this.y - 8, 8, 16)
+            ctx.drawImage(Game.bgimage, (9+(this.type-100)) * 16, 0, 8, 16, this.x - 8 - (8-this.splitTimer), this.y - 8, 8, 16)
+            ctx.drawImage(Game.bgimage, (9+(this.type-100)) * 16 + 8, 0, 8, 16, this.x + (8-this.splitTimer), this.y - 8, 8, 16)
         } else
-            ctx.drawImage(Game.bgimage, (7 + (this.type-100)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
+            ctx.drawImage(Game.bgimage, (9 + (this.type-100)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
     },
     
     moveTimer: 0,
