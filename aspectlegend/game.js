@@ -372,7 +372,7 @@ function GameObject() {
 GameObject.prototype = {
     speed: 2,
 
-    stallCountMax: 10,
+    stallCountMax: 20,
 
     offset: 0,
 
