@@ -323,22 +323,25 @@ Game.isSolid = function(x, y, self) {
         return true;
     else if (tile == 5 && self instanceof Enemy)
         return true;
-    else if (tile == 6 && self instanceof Player)
-        return true;
     else if (tile == 8 && !(self instanceof Projectile))
         return true;
     
+    var pass = false;
     for(var i = 0; i < Game.blocks.length; i++) {
         var block = Game.blocks[i];
         if (Math.abs(block.x - x) <= 8 && Math.abs(block.y - y) <= 8) {
             if (self instanceof Player)
-                return block.collide();
+                pass = pass || block.collide();
             else
                 return true;
         }
     }
     
-    return false;
+    if (tile == 6 && self instanceof Player)
+        return true;
+    else
+        return pass;
+    
     //var i = Math.floor(x / 16) + 10 * Math.floor(y / 16);
     //return worldfile.key[this.tileMap[i]] == 1;
 }
@@ -635,7 +638,7 @@ getEnemy = function(invar) {
                             this.direction = 1;
                     }
                     
-                    if ((blocked0 && blocked1 && blocked2 && blocked3 && blocked4)) {
+                    if ((blocked0 && blocked1 && blocked2 && blocked3)) {
                         this.moving = false;
                         this.animate = true;
                     }
@@ -759,6 +762,7 @@ function Block(invar) {
         }
     } else if (this.type < 104) {
         this.aspect = this.type - 101;
+
         this.collide= function() {
             if (Game.player.aspect == this.aspect && this.moveTimer == 0) {
                 this.move(Game.player.direction)
@@ -851,7 +855,6 @@ Block.prototype = {
             x = x - 16;
         else if (dir == 3)
             x = x + 16;
-        
         
         if (!Game.isSolid(x, y, this) && (x >= 8 && y >= 8 && x <= 152 && y <= 120)) {
             this.moveTimer = 16;
