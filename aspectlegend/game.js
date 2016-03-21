@@ -584,12 +584,17 @@ getEnemy = function(invar) {
     } else if (enemy.type == 2) {
         // Rat, crawls along walls
         enemy.direction = 2;
+        enemy.moving = true;
         enemy.update = function() {
             this._update();
-            this.moving = true;
+            //this.moving = true;
             if (this.stallCount % 6 == 0) {
                 var x = this.x;
                 var y = this.y;
+                if (!this.moving || Game.isSolid(this.x, this.y)) {
+                    this.moving = false;
+                    return;
+                }
                 if (this.direction == 0)
                     y = y + 1;
                 else if (this.direction == 1)
@@ -628,6 +633,11 @@ getEnemy = function(invar) {
                             this.direction = 0;
                         else
                             this.direction = 1;
+                    }
+                    
+                    if ((blocked0 && blocked1 && blocked2 && blocked3 && blocked4)) {
+                        this.moving = false;
+                        this.animate = true;
                     }
                 }
             }
@@ -842,7 +852,8 @@ Block.prototype = {
         else if (dir == 3)
             x = x + 16;
         
-        if (!Game.isSolid(x, y, this)) {
+        
+        if (!Game.isSolid(x, y, this) && (x >= 8 && y >= 8 && x <= 152 && y <= 120)) {
             this.moveTimer = 16;
             this.dir = dir;
         }

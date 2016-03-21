@@ -10,28 +10,14 @@ Arbitrary = function(invar) {
     } else if (invar[0] == 203) {
         Game.objects.push(getTalkOnEnter(invar, ["I found myself lost in this strange cave.", "I don't remember how I got here, I don't remember who I am...", "What happened?"]));
     } else if (invar[0] == 204) {
-        Game.objects.push(getTalker(invar, 1, ["Meow!", "Talking to the cat reminds you of something.", "Three symbols, but why and what is their purpose?"], true));
+        Game.objects.push(getTalker(invar, 1, ["\"Meow!\"", "Talking to the cat reminds me of something.", "Three symbols, but why and what is their purpose?"], true));
     } else if (invar[0] == 205) {
-        var runner = getTalker(invar, 1, ["Meow!", "I realized that this strange symbol will allow me to restore my progress.", "But did I realize it, or did the cat tell me?"], false);
-        runner._speak = runner.speak;
-        runner.running = false;
+        var runner = getRunner(invar, 1, ["\"Meow!\"", "I realized that this strange symbol will allow me to restore my progress.", "But did I realize it, or did the cat tell me?"], 2);
         runner.direction = 3;
-        runner.speed = 2;
-        runner.speak = function() {
-            if (!this.moving) {
-                this._speak();
-                this.moving = true;
-            }
-        }
-        runner.update = function() {
-            if (this.moving)
-                this.direction = 2;
-            this._update();
-        }
-        runner.boundscheck = function() {
-            this.active = false;
-            this.invar[3] = false;
-        }
+        Game.objects.push(runner);
+    } else if (invar[0] == 206) {
+        var runner = getRunner(invar, 1, ["\"Meow!\"", "I get the impression this cat knows more than it's saying."], 2);
+        runner.direction = 1;
         Game.objects.push(runner);
     }
 }
@@ -213,4 +199,35 @@ getTalkOnEnter = function(invar, text) {
         }
     };
     return talker;
+}
+
+getRunner = function(invar, row, text, rundir) {
+    var runner = getTalker(invar, row, text, false);
+    runner._speak = runner.speak;
+    runner.running = false;
+    runner.speed = 2;
+    runner.timer = 3;
+    runner.rundir = rundir;
+    runner.speak = function() {
+        if (!this.moving) {
+            this._speak();
+            this.timer = 2;
+        }
+    }
+    runner.update = function() {
+        if (!this.moving && this.timer < 3) {
+            this.timer--;
+            if (this.timer == 0) {
+                this.direction = this.rundir;
+                this.moving = true;
+            }
+        }
+        this._update();
+    }
+    runner.boundscheck = function() {
+        console.log("bounds");
+        this.active = false;
+        this.invar[3] = false;
+    }
+    return runner;
 }

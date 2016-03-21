@@ -28,6 +28,19 @@ TypeLabel = {
     "Lock": 106}
 Type = {v: k for k, v in TypeLabel.items()}
 
+RoomColor = {
+    0 : "#999999",
+    1 : "#BC88A0",
+    2 : "#5699EE",
+    3 : "#A088BC",
+    4 : "#99EE59",
+    5 : "#34DE66",
+    6 : "#8899EE",
+    7 : "#99EE88",
+    8 : "#22EEFF",
+    9 : "#670000"
+}
+
 class Application(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
@@ -428,7 +441,8 @@ class RoomGrid:
                 if x == i and y == j:
                     color = "#F00000"
                 elif self.rooms[i + self.l * j] != 0:
-                    color = "#999999"
+                    color = RoomColor[self.rooms[i+self.l*j].area]
+                    #color = "#999999"
                 image.put("#000000", to=(i*20 + 1, j*20 + 1, 
                                          (i+1) * 20 - 1, (j+1) * 20 - 1))
                 image.put(color, to=(i*20 + 2, j*20 + 2, 
