@@ -238,10 +238,19 @@ Game.draw = function(ctx) {
     	ctx.globalAlpha = this.animCount / 255;
     }*/
     if (this.mode != GameStage.PauseMode) {
-        this.objects.forEach(function(e) {
+        var drawable = this.objects.slice();
+        drawable.push(this.player);
+        drawable.sort(function(a, b) {
+        return parseFloat(a.y) - parseFloat(b.y);
+        });
+        for (var i=0; i < drawable.length; i++) {
+            drawable[i].draw(ctx);
+        }
+        /*this.objects.forEach(function(e) {
             e.draw(ctx)
         });
-        this.player.draw(ctx);
+        this.player.draw(ctx);*/
+        
     }
     if (this.mode == GameStage.WinMode) {
         this.player.draw(ctx);
