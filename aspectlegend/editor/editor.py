@@ -76,21 +76,27 @@ class Application(tk.Frame):
         self.master.bind("<Left>", lambda x: self.movegrid(-1, 0))
         self.master.bind("<Right>", lambda x: self.movegrid(1, 0))
         self.master.bind("<Delete>", self.delgrid)
-        
-        self.tilecanvas = tk.Canvas(self, width=self.tiles.width,
-                                    height=self.tiles.height)
+       
+        scrolltilecanvas = tk.Scrollbar(self, orient=tk.HORIZONTAL)
+        scrolltilecanvas.grid(row=1, column=0, columnspan=4, sticky=tk.W+tk.E)
+        self.tilecanvas = tk.Canvas(self, 
+                                    scrollregion=(0,0,self.tiles.width,
+                                                  self.tiles.height),
+                                    height=self.tiles.height,
+                                    xscrollcommand=scrolltilecanvas.set)
         self.tilecanvasimg = self.tilecanvas.create_image(
                 0,0,anchor=tk.NW,image=self.tilesTk)
-        self.tilecanvas.grid(row=0, column=0, columnspan = 4)
+        self.tilecanvas.grid(row=0, column=0, columnspan=4, sticky=tk.W+tk.E)
         self.tilecanvas.bind("<Button-1>", self.tileclick)
-        
+        scrolltilecanvas.config(command=self.tilecanvas.xview)
+
         self.gridcanvas = tk.Canvas(self, width=320, height=320)
-        self.gridcanvas.grid(row=1, column=0)
+        self.gridcanvas.grid(row=2, column=0)
         self.gridcanvasimage = self.gridcanvas.create_image(0,0,anchor=tk.NW)
         self.gridcanvas.bind("<Button-1>", self.gridclick)
 
         viewpanel = tk.Frame(self)
-        viewpanel.grid(row=1, column=1)
+        viewpanel.grid(row=2, column=1)
         self.viewcanvas = tk.Canvas(viewpanel, width=160*2, height=(144-16)*2)
         self.viewcanvas.grid(row=0, column=0,columnspan=2)
         self.viewcanvasimage = self.viewcanvas.create_image(0,0,anchor=tk.NW)
@@ -107,7 +113,7 @@ class Application(tk.Frame):
         self.objectview = []
 
         controls = tk.Frame(self, width=12*32, height=12*32)
-        controls.grid(row=1, column=2)
+        controls.grid(row=2, column=2)
         loadbutton = tk.Button(controls, text="Open", command=self.open)
         loadbutton.grid(row=0, column=0)
         savebutton = tk.Button(controls, text="Save", command=self.save)
@@ -157,7 +163,7 @@ class Application(tk.Frame):
         addenemybutton.grid(row=6, column=1, sticky=tk.W)
 
         tilepanel = tk.Frame(self)
-        tilepanel.grid(row=1, column=3)
+        tilepanel.grid(row=2, column=3)
         tk.Label(tilepanel, text="Current tile:").pack()
         self.currenttileimg = ImageTk.PhotoImage(self.tileset[self.select])
         self.currenttile = tk.Label(tilepanel, image=self.currenttileimg)
@@ -182,7 +188,7 @@ class Application(tk.Frame):
 
         self.statusbar = tk.Label(self, text="Loaded successfully!", bd=1,
                                   relief=tk.SUNKEN, anchor=tk.W)
-        self.statusbar.grid(row=2, column=0, columnspan=4, sticky=tk.W+tk.E)
+        self.statusbar.grid(row=3, column=0, columnspan=4, sticky=tk.W+tk.E)
 
     def drawroom(self):
         self.roomimg = self.room.draw()

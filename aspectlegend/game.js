@@ -616,7 +616,18 @@ getEnemy = function(invar) {
                     var blocked2 = Game.isSolid(tilex - 16, tiley, this);
                     var blocked3 = Game.isSolid(tilex + 16, tiley, this);
                     
-                    if (this.direction == 0) {
+                    if ((blocked0 && blocked1 && blocked2 && blocked3)) {
+                        this.moving = false;
+                        this.animate = true;
+                    } else if (blocked1 && blocked2 && blocked3) {
+                        this.direction = 0;
+                    } else if (blocked0 && blocked2 && blocked3) {
+                        this.direction = 1;
+                    } else if (blocked0 && blocked1 && blocked3) {
+                        this.direction = 2;
+                    } else if (blocked0 && blocked1 && blocked2) {
+                        this.direction = 3;
+                    } else if (this.direction == 0) {
                         if (blocked2)
                             this.direction = 3;
                         else
@@ -636,11 +647,6 @@ getEnemy = function(invar) {
                             this.direction = 0;
                         else
                             this.direction = 1;
-                    }
-                    
-                    if ((blocked0 && blocked1 && blocked2 && blocked3)) {
-                        this.moving = false;
-                        this.animate = true;
                     }
                 }
             }
