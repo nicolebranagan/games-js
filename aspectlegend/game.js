@@ -5,6 +5,7 @@ function Game() {
 Game.keys = 0;
 Game.area = 0;
 Game.crystals = 0;
+Game.flipped = false;
 Game.objectimage = new Image();
 Game.objectimage.src = "./images/objects.png"
 
@@ -44,7 +45,7 @@ Game.reset = function(newgame) {
     
     if (newgame) {
         // Prepare blank snapshot;
-        this.snapshot = { x: this.player.x, y: this.player.y, aspect: 0, roomx: 3, roomy: 3, keys: 0, crystals: 0, objects: [] }
+        this.snapshot = { x: this.player.x, y: this.player.y, aspect: 0, roomx: 3, roomy: 3, keys: 0, crystals: 0, flipped: false, objects: [] }
         for(var i=0; i < worldfile.rooms.length; i++) {
             var e = worldfile.rooms[i]
             if (e != 0) {
@@ -63,6 +64,17 @@ Game.reset = function(newgame) {
 }
 
 Game.reload = function() {
+    if (__debug) {
+        this.shootLag = 0;
+        this.player.x = this.snapshot.x;
+        this.player.y = this.snapshot.y;
+        this.player.aspect = this.snapshot.aspect;
+        this.keys = this.snapshot.keys;
+        this.crystals = this.snapshot.crystals;
+        this.mode = GameStage.RunMode;
+        this.loadroom(this.snapshot.roomx, this.snapshot.roomy);
+        return;
+    }
     this.shootLag = 0;
     this.lag = 0;
     this.player.x = this.snapshot.x;
@@ -70,7 +82,7 @@ Game.reload = function() {
     this.player.aspect = this.snapshot.aspect;
     this.keys = this.snapshot.keys;
     this.crystals = this.snapshot.crystals;
-    if (!__debug) {
+    this.flipped = this.snapshot.flipped;
     for(var i=0; i < worldfile.rooms.length; i++) {
         var e = worldfile.rooms[i]
         if (e != 0) {
@@ -78,7 +90,6 @@ Game.reload = function() {
                 e.objects[j][3] = this.snapshot.objects[i][j];
             }
         }
-    }
     }
 
     this.mode = GameStage.RunMode;
@@ -335,7 +346,7 @@ Game.isSolid = function(x, y, self) {
             if (self instanceof Player)
                 pass = pass || block.collide();
             else
-                return true;
+                pass = pass || block.contact(self); //return true;
         }
     }
     
@@ -806,6 +817,38 @@ function Block(invar) {
             }
             return true;
         }
+    } else if (this.type == 107) {
+        this.draw = function() {
+            ctx.drawImage(Game.bgimage, (7 - (Game.flipped ? 1 : 0)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
+        }
+        this.collide = function() { return this.contact(Game.player); }
+        this.lastTouch = null;
+        this.contact = function(caller) { 
+            if (!caller)
+                return;
+            if (((caller.x - this.x) > 8) || ((caller.y - this.y) > 8))
+                return;
+            if (this.lastTouch === null || this.lastTouch !== caller) {
+                this.lastTouch = caller;
+                Game.flipped = !(Game.flipped);
+                this.lag = 16;
+            }
+            return false;
+        }
+        this.update = function() {
+            if (this.lastTouch) {
+                if ((this.lastTouch.x - this.x > 12) || (this.lastTouch.y - this.y > 12))
+                    this.lastTouch = null;
+            }
+        }
+    } else if (this.type == 108) {
+        this.draw = function() {
+            ctx.drawImage(Game.bgimage, (3 + (Game.flipped ? 5 : 0)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
+        }
+        this.collide = function() { return this.contact(Game.player); }
+        this.contact = function(caller) { 
+            return !(Game.flipped);
+        }
     }
 }
 
@@ -870,5 +913,6 @@ Block.prototype = {
         }
     },
     
-    collide: function() { this.active = false; return false; }
+    collide: function() { this.active = false; return false; },
+    contact: function(caller) { return true; }
 }

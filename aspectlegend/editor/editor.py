@@ -25,14 +25,17 @@ TypeLabel = {
     "Block o" : 103,
     "Save" : 104,
     "Key" : 105,
-    "Lock": 106}
+    "Lock": 106,
+    "Flipper" : 107,
+    "FlipBlock" : 108,
+}
 Type = {v: k for k, v in TypeLabel.items()}
 
 RoomColor = {
     0 : "#999999",
     1 : "#BC88A0",
-    2 : "#5699EE",
-    3 : "#A088BC",
+    2 : "#16AE49",
+    3 : "#3048DE",
     4 : "#99EE59",
     5 : "#34DE66",
     6 : "#8899EE",
@@ -136,7 +139,7 @@ class Application(tk.Frame):
         self.selectedblock.set(Type[100])
         tk.OptionMenu(
                 controls, self.selectedblock, 
-                *[Type[x] for x in range(100,107)]).grid(
+                *[Type[x] for x in range(100,109)]).grid(
                     row=4, column=0)
         addblockbutton = tk.Button(controls, text="Add", 
                                    command=lambda: self.addobject(
@@ -198,7 +201,7 @@ class Application(tk.Frame):
 
         [self.viewcanvas.delete(x) for x in self.objectview]
         for x in self.room.objects:
-            if x[0] >= 200:
+            if x[0] >= 107:
                 color = "#00AA00"
                 self.objectview.append(self.viewcanvas.create_text((
                                        x[1]*32+16, x[2]*32+16), fill=color,

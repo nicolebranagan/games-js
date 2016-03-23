@@ -181,6 +181,10 @@ wideDoor.prototype = {
             }
         }
         return true;
+    },
+    
+    contact: function(caller) {
+        return true;
     }
 }
 
