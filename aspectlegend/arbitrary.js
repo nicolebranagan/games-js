@@ -19,6 +19,42 @@ Arbitrary = function(invar) {
         var runner = getRunner(invar, 1, ["\"Meow!\"", "I get the impression this cat knows more than it's saying."], 2);
         runner.direction = 1;
         Game.objects.push(runner);
+    } else if (invar[0] == 207) {
+        var crys = getCrystal(invar);
+        crys.collide = function() {
+            if (this.active != false) {
+                Game.textBox(["This crystal! I don't know the meaning of this, but I know it's important!", "I don't know why, but I get the impression that if I find more of these, it might restore my memory.", "...or at least it will give me something to do."]);
+                this._collide();
+            }
+        }
+        Game.blocks.push(crys);
+    } else if (invar[0] == 208) {
+        var talker = getTalker(invar, 6, ["Everyone in this town turned to stone one day.", "...", "Of course we had nothing to do with it!"], false);
+        talker.direction = 3;
+        Game.objects.push(talker);
+    } else if (invar[0] == 209) {
+        var talker = getTalker(invar, 6, ["The cult of the god-empress is trying to investigate matters here.", "Our leader has set up camp in the southern part of the town."], false);
+        Game.objects.push(talker);
+    } else if (invar[0] == 210) {
+        var talker = getTalker(invar, 6, ["The bridge to the southern part of the town has collapsed!", "And I'm certainly not going to get my robe wet!"], false);
+        talker.direction = 3;
+        Game.objects.push(talker);
+    } else if (invar[0] == 211) {
+        Game.blocks.push(getDoor(invar, function() { 
+            if (Game.crystals < 2) {
+                Game.textBox(["This door... I think it's tied to the crystals somehow!", "Perhaps if I get enough crystals, it'll open."]);
+            } else {
+                this.open();
+            }
+        }));
+    } else if (invar[0] == 212) {
+        var talker = getTalker(invar, 6, ["These poor imperial guards...", "I'd say I feel bad for their families, but I believe they're cloned from birth now."], false);
+        talker.direction = 1;
+        Game.objects.push(talker);
+    } else if (invar[0] == 213) {
+        var talker = getTalker(invar, 6, ["Before the town was destroyed, it developed submarine technology.", "Maybe this was a punishment from god for their sins?"], false);
+        talker.direction = 2;
+        Game.objects.push(talker);
     }
 }
 
@@ -230,4 +266,62 @@ getRunner = function(invar, row, text, rundir) {
         this.invar[3] = false;
     }
     return runner;
+}
+
+getCrystal = function(invar) {
+    var crystal = new Block(invar);
+    crystal.drawCount = 0;
+    crystal.draw = function(ctx) {
+        ctx.drawImage(Game.objectimage, 10 * 16, (2+this.drawCount) * 16, 16, 16, this.x - 8, this.y - 8, 16, 16);
+    }
+    crystal.update = function() {
+        if (this.lag == 0) {
+            this.drawCount++;
+            if (this.drawCount == 4) this.drawCount = 0;
+            this.lag = 15;
+        }
+        else
+            this.lag--;
+    }
+    crystal._collide = function() {
+        Game.crystals++;
+        this.active = false;
+        this.invar[3] = false;
+    }
+    crystal.collide = function() {
+        if (this.active)
+            this._collide;
+    }
+    return crystal;
+}
+
+getDoor = function(invar, onhit) {
+    var door = new Block(invar);
+    door.drawCount = 0;
+    door.draw = function(ctx) {
+        ctx.drawImage(Game.objectimage, 8 * 16, (2+this.drawCount) * 16, 32, 16, this.x - 16, this.y - 8, 32, 16);
+    }
+    door.lag = -1;
+    door.update = function() {
+        if (this.lag == 0) {
+            this.drawCount++;
+            this.lag = 5;
+            if (this.drawCount == 6) {
+                this.active = false;
+                this.invar[3] = false;
+            }
+        }
+        else if (this.lag > 0)
+            this.lag--;
+    }
+    door.onhit = onhit;
+    door.collide = function() {
+        if (this.lag == -1)
+            this.onhit();
+    }
+    door.open = function() {
+        // Open after condition is met
+        this.lag = 0;
+    }
+    return door;
 }

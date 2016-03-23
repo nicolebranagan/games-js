@@ -466,7 +466,7 @@ class RoomGrid:
     def load(self, dumped):
         self.rooms = [x if x == 0 else Room.load(x, self.tileset) 
                       for x in dumped["rooms"]]
-        self.key = dumped["key"]
+        self.key = dumped["key"] + [0]*(len(self.tileset)-len(dumped["key"]))
 
 root = tk.Tk()
 app = Application(master=root)

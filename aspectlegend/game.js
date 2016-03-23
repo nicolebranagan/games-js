@@ -70,6 +70,7 @@ Game.reload = function() {
     this.player.aspect = this.snapshot.aspect;
     this.keys = this.snapshot.keys;
     this.crystals = this.snapshot.crystals;
+    if (!__debug) {
     for(var i=0; i < worldfile.rooms.length; i++) {
         var e = worldfile.rooms[i]
         if (e != 0) {
@@ -77,6 +78,7 @@ Game.reload = function() {
                 e.objects[j][3] = this.snapshot.objects[i][j];
             }
         }
+    }
     }
 
     this.mode = GameStage.RunMode;
@@ -382,7 +384,7 @@ GameObject.prototype = {
     draw: function(ctx) {
         // Slice image
         ctx.drawImage(Game.objectimage, 16 * (2 * this.direction + this.currentFrame + this.offset), this.row * 16, 16, 16, this.x - 8, this.y - 8, 16, 16);
-        if (this.aspect != -1 && Game.area != 0)
+        if (this.aspect != -1 && Game.area != 0 && Game.area != 2)
             ctx.drawImage(Game.objectimage, 128 + 8 * this.aspect, 0, 8, 8, this.x - 4, this.y - 16, 8, 8)
     },
     

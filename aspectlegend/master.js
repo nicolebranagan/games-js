@@ -1,6 +1,7 @@
 var gamecanvas = document.getElementById('gamecanvas');
 var gamecontrols = document.getElementById('gamecontrols');
 var activated = false;
+var __debug = false;
 
 var selection = 0;
 
@@ -15,7 +16,7 @@ function Loop() {
         ctx.drawImage(Titleimage, 0, 0);
         drawText(ctx, 8*8, 10*8, "New Game");
         drawText(ctx, 8*8, 12*8, "Continue");
-        drawText(ctx, 8*8, 14*8, "Options");
+        drawText(ctx, 8*8, 14*8, "Debug Load");
         drawText(ctx, 6*8, (10 + (selection*2))*8, [26]);
         drawText(ctx, 2*8, 16*8, "(C) 2016");
         if (Controls.Enter || Controls.Shoot) {
@@ -26,7 +27,7 @@ function Loop() {
                 activated = true;
             } else if (selection == 1) {
                 // Continue
-                saved = localStorage.getItem('saved');
+                var saved = localStorage.getItem('saved');
                 if (saved === null) {
                     PlaySound("die");
                 } else {
@@ -34,7 +35,13 @@ function Loop() {
                     Game.activate(false);
                     activated = true;
                 }
-            } // TODO: Options
+            } else if (selection == 2) {
+                __debug = true;
+                var saved = localStorage.getItem('saved');
+                Game.snapshot = JSON.parse(saved);
+                Game.activate(false);
+                activated = true;
+            }
         } else if (Controls.Up) {
             if (selection != 0)
                 selection--;
