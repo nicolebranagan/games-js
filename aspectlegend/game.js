@@ -607,9 +607,11 @@ getEnemy = function(invar) {
             if (this.stallCount % 6 == 0) {
                 var x = this.x;
                 var y = this.y;
-                if (!this.moving || Game.isSolid(this.x, this.y)) {
+                if (Game.isSolid(this.x, this.y)) {
                     this.moving = false;
                     return;
+                } else {
+                    this.moving = true;
                 }
                 if (this.direction == 0)
                     y = y + 1;
@@ -826,7 +828,7 @@ function Block(invar) {
         this.contact = function(caller) { 
             if (!caller)
                 return;
-            if (((caller.x - this.x) > 8) || ((caller.y - this.y) > 8))
+            if ((Math.abs(caller.x - this.x) > 8) || (Math.abs(caller.y - this.y) > 8))
                 return;
             if (this.lastTouch === null || this.lastTouch !== caller) {
                 this.lastTouch = caller;
@@ -837,7 +839,7 @@ function Block(invar) {
         }
         this.update = function() {
             if (this.lastTouch) {
-                if ((this.lastTouch.x - this.x > 12) || (this.lastTouch.y - this.y > 12))
+                if ((Math.abs(this.lastTouch.x - this.x) > 8) || (Math.abs(this.lastTouch.y - this.y) > 8))
                     this.lastTouch = null;
             }
         }

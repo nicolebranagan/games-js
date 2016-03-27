@@ -103,6 +103,10 @@ Controls.keyUp = function(event) {
     if (event.keyCode == 13) {
         Controls.Enter = false;
     }
+    if (event.keyCode == 9) {
+        var image = gamecanvas.toDataURL("image/png");
+        window.open(image, '_blank');
+    }
 }
 
 Controls.touchStart = function(events) {

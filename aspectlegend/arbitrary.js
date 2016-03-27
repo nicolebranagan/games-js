@@ -52,7 +52,7 @@ Arbitrary = function(invar) {
         talker.direction = 1;
         Game.objects.push(talker);
     } else if (invar[0] == 213) {
-        var talker = getTalker(invar, 6, ["Before the town was destroyed, it developed submarine technology.", "Maybe this was a punishment from god for their sins?"], false);
+        var talker = getTalker(invar, 6, ["Before the town was destroyed, the people developed submarine technology.", "Maybe this was a punishment from the god-empress for their sins?"], false);
         talker.direction = 2;
         Game.objects.push(talker);
     }
