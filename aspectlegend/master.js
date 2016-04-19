@@ -1,6 +1,6 @@
 var gamecanvas = document.getElementById('gamecanvas');
 var gamecontrols = document.getElementById('gamecontrols');
-var activated = false;
+var runner = LogoScreen;
 var __debug = false;
 
 var selection = 0;
@@ -9,49 +9,15 @@ function Loop() {
     setTimeout(Loop, 500 / 60);
     ctx = gamecanvas.getContext("2d");
     ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
-    if (activated) {
+    runner.update();
+    runner.draw(ctx);
+    /*if (activated) {
         Game.update();
         Game.draw(ctx);
     } else {
-        ctx.drawImage(Titleimage, 0, 0);
-        drawText(ctx, 8*8, 10*8, "New Game");
-        drawText(ctx, 8*8, 12*8, "Continue");
-        drawText(ctx, 8*8, 14*8, "Debug Load");
-        drawText(ctx, 6*8, (10 + (selection*2))*8, [26]);
-        drawText(ctx, 2*8, 16*8, "(C) 2016");
-        if (Controls.Enter || Controls.Shoot) {
-            Controls.Enter = false;
-            if (selection == 0) {
-                // New Game
-                Game.activate(true);
-                activated = true;
-            } else if (selection == 1) {
-                // Continue
-                var saved = localStorage.getItem('saved');
-                if (saved === null) {
-                    PlaySound("die");
-                } else {
-                    Game.snapshot = JSON.parse(saved);
-                    Game.activate(false);
-                    activated = true;
-                }
-            } else if (selection == 2) {
-                __debug = true;
-                var saved = localStorage.getItem('saved');
-                Game.snapshot = JSON.parse(saved);
-                Game.activate(false);
-                activated = true;
-            }
-        } else if (Controls.Up) {
-            if (selection != 0)
-                selection--;
-            Controls.Up = false;
-        }   else if (Controls.Down) {
-            if (selection != 2)
-                selection++;
-            Controls.Down = false;
-        }
-    }
+        TitleScreen.update();
+        TitleScreen.draw(ctx);
+    }*/
 }
 
 function Controls() {
@@ -172,6 +138,9 @@ document.body.addEventListener("touchend", Controls.touchEnd, false);
 var Titleimage = new Image();
 Titleimage.src = "./images/title.png";
 
+var Logo = new Image();
+Logo.src = "./images/logo.png";
+
 var Font = new Image();
 Font.src = "./images/cgafont.png";
 
@@ -199,4 +168,9 @@ loadJSON("world.json", function(response) {
         Loop();
     }
 });
+
+PlaySound = function(sound) {
+    var snd = new Audio("./sound/" + sound + ".wav");
+    snd.play();
+}
 //Loop();

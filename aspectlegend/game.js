@@ -25,6 +25,7 @@ Game.activate = function(newgame) {
     this.bgimage.src = "./images/train_map.png";
 
     this.reset(newgame);
+    runner = this;
 }
 
 Game.reset = function(newgame) {
@@ -57,9 +58,6 @@ Game.reset = function(newgame) {
             }
         }
     }
-
-    /*this.mode = GameStage.RunMode;
-    this.loadroom(0, 0);*/
     this.reload();
 }
 
@@ -150,6 +148,7 @@ Game.update = function() {
             this.lag = 20;
             Controls.Enter = false;
             this.mode = GameStage.PauseMode;
+            PlaySound("pause");
         }
         this.player.moving = false;
         if (Controls.Up) {
