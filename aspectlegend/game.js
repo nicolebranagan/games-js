@@ -776,7 +776,7 @@ function Block(invar) {
         // 4 way
         this.collide = function() {
             if (this.moveTimer == 0) {
-                this.move(Game.player.direction)
+                this.push(Game.player.direction)
             }
             return true;
         }
@@ -785,7 +785,7 @@ function Block(invar) {
 
         this.collide= function() {
             if (Game.player.aspect == this.aspect && this.moveTimer == 0) {
-                this.move(Game.player.direction)
+                this.push(Game.player.direction)
             }
             return true;
         }
@@ -882,6 +882,8 @@ Block.prototype = {
                     this.x = this.x + 1;
                 this.move(x, y);
                 this.moveTimer--;
+                if (this.moveTimer == 0)
+                    this.pushCount = 0;
             }
             this.lag--;
         }
@@ -911,7 +913,16 @@ Block.prototype = {
         if (!Game.isSolid(x, y, this) && (x >= 8 && y >= 8 && x <= 152 && y <= 120)) {
             this.moveTimer = 16;
             this.dir = dir;
-        }
+        } else
+            this.pushCount = 0;
+    },
+    
+    pushCount: 0,
+    
+    push: function(dir) {
+        this.pushCount++;
+        if (this.pushCount == 4)
+            this.move(dir);
     },
     
     collide: function() { this.active = false; return false; },
