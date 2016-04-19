@@ -394,6 +394,10 @@ GameObject.prototype = {
     draw: function(ctx) {
         // Slice image
         ctx.drawImage(Game.objectimage, 16 * (2 * this.direction + this.currentFrame + this.offset), this.row * 16, 16, 16, this.x - 8, this.y - 8, 16, 16);
+        this.drawAspect(ctx);
+    },
+    
+    drawAspect: function(ctx) {
         if (this.aspect != -1 && Game.area != 0 && Game.area != 2)
             ctx.drawImage(Game.objectimage, 128 + 8 * this.aspect, 0, 8, 8, this.x - 4, this.y - 16, 8, 8)
     },
@@ -481,7 +485,17 @@ GameObject.prototype = {
     collect: function() {}
 }
 
-function Player() {}
+function Player() {
+    this.drawx = this.draw;
+    this.draw = function(ctx) {
+        if (Game.mode != GameStage.DieMode)
+            this.drawx(ctx);
+        else {
+            ctx.drawImage(Game.objectimage, 13*16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
+            this.drawAspect(ctx);
+        }
+    };
+};
 Player.prototype = new GameObject();
 Player.prototype.stallCountMax = 20;
 Player.prototype.boundscheck = function(x, y) {

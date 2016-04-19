@@ -53,8 +53,12 @@ var LogoScreen = {
         if (this.timer > 320) {
             runner = TitleScreen;
         }
-        if (this.timer == 122 || this.timer == 198)
+        if (this.timer == 110 || this.timer == 186)
             PlaySound("whistle");
+        if (Controls.Enter) {
+            Controls.Enter = false;
+            runner = TitleScreen;
+        };
     },
     sprite: {
         frame: 0,
@@ -75,7 +79,7 @@ var LogoScreen = {
             if (this.frameTimer == 20) {
                 this.frameTimer = 0;
                 this.frame = ((this.frame + 1) % 2);
-            }
+            };
         }
     }
 }
