@@ -934,4 +934,4 @@ Block.prototype = {
     
     collide: function() { this.active = false; return false; },
     contact: function(caller) { return true; }
-}
+};

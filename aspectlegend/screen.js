@@ -100,4 +100,4 @@ TextScreen.prototype = {
     update: function() {
         this.timer++;
     },
-}
+};

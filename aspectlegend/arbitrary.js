@@ -328,4 +328,4 @@ getDoor = function(invar, onhit) {
         this.lag = 0;
     }
     return door;
-}
+};

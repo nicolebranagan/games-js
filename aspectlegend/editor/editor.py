@@ -313,7 +313,8 @@ class Application(tk.Frame):
         if filen != () and filen != "":
             with open(filen, "w") as fileo:
                 fileo.seek(0)
-                fileo.write("var worldfile = \n"+json.dumps(self.roomset.dump()))
+                fileo.write("var worldfile = \n"+
+                            json.dumps(self.roomset.dump())+"\n")
                 fileo.truncate()
 
     def open(self):
