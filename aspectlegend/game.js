@@ -484,7 +484,16 @@ function Player() {
         if (Game.mode != GameStage.DieMode)
             this.drawx(ctx);
         else {
-            ctx.drawImage(Game.objectimage, 13*16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
+            // Death animation
+            this.stallCount = this.stallCount + 1;
+            if (this.stallCount == this.stallCountMax) {
+                this.stallCount = 0;
+            }
+            if (this.stallCount == 0) {
+                this.currentFrame = (this.currentFrame + 1) % 2;
+            }
+            
+            ctx.drawImage(Game.objectimage, (14 + this.currentFrame)*16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
             this.drawAspect(ctx);
         }
     };
