@@ -1,14 +1,3 @@
-function Game() {
-
-}
-
-Game.keys = 0;
-Game.area = 0;
-Game.crystals = 0;
-Game.flipped = false;
-Game.objectimage = new Image();
-Game.objectimage.src = "./images/objects.png"
-
 var GameStage = {
     RunMode: 0,
     DieMode: 1,
@@ -17,263 +6,269 @@ var GameStage = {
     TextMode: 4,
 }
 
-// The activate function is called first and only once
-Game.activate = function(newgame) {
-    PlaySound("start");
-
-    this.bgimage = new Image();
-    this.bgimage.src = "./images/train_map.png";
-
-    this.reset(newgame);
-    runner = this;
-}
-
-Game.reset = function(newgame) {
-    this.player = new Player();
-    /*this.shootLag = 0;
-    this.lag = 0;
-    this.keys = 0;
-    this.crystals = 0;*/
+var Game = {
+    keys: 0,
+    area: 0,
+    crystals: 0,
+    flipped: false,
     
-    // Clean worldfile
-    worldfile.rooms.forEach(function(e1, i) {
-        if (e1 != 0) {
-            e1.objects.forEach(function(e2, j) {
-                e2[3] = true;
-            });
-        }
-    });
-    
-    if (newgame) {
-        // Prepare blank snapshot;
-        this.snapshot = { x: this.player.x, y: this.player.y, aspect: 0, roomx: 3, roomy: 3, keys: 0, crystals: 0, flipped: false, objects: [] }
-        for(var i=0; i < worldfile.rooms.length; i++) {
-            var e = worldfile.rooms[i]
-            if (e != 0) {
-                var invar = [];
-                for(var j=0; j<e.objects.length; j++) {
-                    invar[j] = true; //e.objects[j][3];
+    activate: function(newgame) {
+        PlaySound("start");
+
+        this.objectimage = new Image();
+        this.objectimage.src = "./images/objects.png"
+        
+        this.bgimage = new Image();
+        this.bgimage.src = "./images/train_map.png";
+
+        this.reset(newgame);
+        runner = this;
+    },
+
+    reset: function(newgame) {
+        this.player = new Player();
+        /*this.shootLag = 0;
+        this.lag = 0;
+        this.keys = 0;
+        this.crystals = 0;*/
+        
+        // Clean worldfile
+        worldfile.rooms.forEach(function(e1, i) {
+            if (e1 != 0) {
+                e1.objects.forEach(function(e2, j) {
+                    e2[3] = true;
+                });
+            }
+        });
+        
+        if (newgame) {
+            // Prepare blank snapshot;
+            this.snapshot = { x: this.player.x, y: this.player.y, aspect: 0, roomx: 3, roomy: 3, keys: 0, crystals: 0, flipped: false, objects: [] }
+            for(var i=0; i < worldfile.rooms.length; i++) {
+                var e = worldfile.rooms[i]
+                if (e != 0) {
+                    var invar = [];
+                    for(var j=0; j<e.objects.length; j++) {
+                        invar[j] = true; //e.objects[j][3];
+                    }
+                    this.snapshot.objects[i] = invar;
                 }
-                this.snapshot.objects[i] = invar;
             }
         }
-    }
-    this.reload();
-}
+        this.reload();
+    },
 
-Game.reload = function() {
-    if (__debug) {
+    reload: function() {
+        if (__debug) {
+            this.shootLag = 0;
+            this.player.x = this.snapshot.x;
+            this.player.y = this.snapshot.y;
+            this.player.aspect = this.snapshot.aspect;
+            this.keys = this.snapshot.keys;
+            this.crystals = this.snapshot.crystals;
+            this.mode = GameStage.RunMode;
+            this.loadroom(this.snapshot.roomx, this.snapshot.roomy);
+            return;
+        }
         this.shootLag = 0;
+        this.lag = 0;
         this.player.x = this.snapshot.x;
         this.player.y = this.snapshot.y;
         this.player.aspect = this.snapshot.aspect;
         this.keys = this.snapshot.keys;
         this.crystals = this.snapshot.crystals;
+        this.flipped = this.snapshot.flipped;
+        for(var i=0; i < worldfile.rooms.length; i++) {
+            var e = worldfile.rooms[i]
+            if (e != 0) {
+                for(var j=0; j<e.objects.length; j++) {
+                    e.objects[j][3] = this.snapshot.objects[i][j];
+                }
+            }
+        }
+
         this.mode = GameStage.RunMode;
         this.loadroom(this.snapshot.roomx, this.snapshot.roomy);
-        return;
-    }
-    this.shootLag = 0;
-    this.lag = 0;
-    this.player.x = this.snapshot.x;
-    this.player.y = this.snapshot.y;
-    this.player.aspect = this.snapshot.aspect;
-    this.keys = this.snapshot.keys;
-    this.crystals = this.snapshot.crystals;
-    this.flipped = this.snapshot.flipped;
-    for(var i=0; i < worldfile.rooms.length; i++) {
-        var e = worldfile.rooms[i]
-        if (e != 0) {
-            for(var j=0; j<e.objects.length; j++) {
-                e.objects[j][3] = this.snapshot.objects[i][j];
-            }
-        }
-    }
+    },
 
-    this.mode = GameStage.RunMode;
-    this.loadroom(this.snapshot.roomx, this.snapshot.roomy);
-}
-
-Game.save = function() {
-    this.snapshot = { x: this.player.x, y: this.player.y, aspect: this.player.aspect, roomx: this.roomx, roomy: this.roomy, keys: this.keys, crystals: this.crystals, objects: [] }
-    for(var i=0; i < worldfile.rooms.length; i++) {
-        var e = worldfile.rooms[i]
-        if (e != 0) {
-            var invar = [];
-            for(var j=0; j < e.objects.length; j++) {
-                invar[j] = e.objects[j][3];
-            }
-            this.snapshot.objects[i] = invar;
-        }
-    }
-    localStorage.setItem('saved', JSON.stringify(this.snapshot));
-}
-
-Game.loadroom = function(x, y) {
-    this.roomx = x;
-    this.roomy = y;
-    this.x = x;
-    this.y = y;
-    this.tileMap = worldfile.rooms[x + y * 16].tiles;
-    this.area = worldfile.rooms[x + y * 16].area;
-
-    this.objects = new Array();
-    this.blocks = new Array();
-    objects = worldfile.rooms[x + y * 16].objects;
-    objects.forEach(function(item, index, array) {
-        if (item[0] < 100) {
-            Game.objects.push(
-                getEnemy(item));
-        } else if (item[0] < 200) {
-            Game.blocks.push(new Block(item));
-        } else {
-            Arbitrary(item);
-        }
-    });
-}
-
-Game.tryloadroom = function(x, y) {
-    if (x < 0 || y < 0 || x >= 16 || y >= 16)
-        return false;
-    if (worldfile.rooms[x + y * 16] == 0)
-        return false;
-    this.loadroom(x, y)
-    return true;
-}
-
-// The update function is called first
-Game.update = function() {
-    if (this.mode == GameStage.RunMode) {
-        if (Controls.Enter) {
-            this.lag = 20;
-            Controls.Enter = false;
-            this.mode = GameStage.PauseMode;
-            PlaySound("pause");
-        }
-        this.player.moving = false;
-        if (Controls.Up) {
-            this.player.moving = true;
-            this.player.direction = 1;
-        } else if (Controls.Down) {
-            this.player.moving = true;
-            this.player.direction = 0;
-        } else if (Controls.Left) {
-            this.player.moving = true;
-            this.player.direction = 2;
-        } else if (Controls.Right) {
-            this.player.moving = true;
-            this.player.direction = 3;
-        }
-        if (this.shootLag <= 0) {
-            if (Controls.Shoot) {
-                this.shootLag = 50;
-                var spoke = false;
-                for(var i = 0; i < Game.objects.length; i++) {
-                    var e = Game.objects[i];
-                    if ((e.x-Game.player.x)*(e.x-Game.player.x) + (e.y-Game.player.y)*(e.y-Game.player.y) < 24*24) {
-                        if (e.speak) {
-                            e.speak();
-                            spoke=true;
-                            break;
-                        }
-                    }
+    save: function() {
+        this.snapshot = { x: this.player.x, y: this.player.y, aspect: this.player.aspect, roomx: this.roomx, roomy: this.roomy, keys: this.keys, crystals: this.crystals, objects: [] }
+        for(var i=0; i < worldfile.rooms.length; i++) {
+            var e = worldfile.rooms[i]
+            if (e != 0) {
+                var invar = [];
+                for(var j=0; j < e.objects.length; j++) {
+                    invar[j] = e.objects[j][3];
                 }
-                if (!spoke) {
-                    PlaySound("pew");
-                    this.objects.push(new Projectile(this.player.x, this.player.y,  this.player.direction, this.player.aspect));
-                }
+                this.snapshot.objects[i] = invar;
             }
-        } else
-            this.shootLag = this.shootLag - 1;
+        }
+        localStorage.setItem('saved', JSON.stringify(this.snapshot));
+    },
 
-        this.player.update();
+    loadroom: function(x, y) {
+        this.roomx = x;
+        this.roomy = y;
+        this.x = x;
+        this.y = y;
+        this.tileMap = worldfile.rooms[x + y * 16].tiles;
+        this.area = worldfile.rooms[x + y * 16].area;
 
-        this.objects.forEach(function(e) {
-            e.update();
-            if (e.active == false) {
-                var index = Game.objects.indexOf(e);
-                Game.objects.splice(index, 1);
-            } else if (Math.pow(e.x - Game.player.x, 2) + Math.pow(e.y - Game.player.y, 2) < 100) {
-                e.collect()
+        this.objects = new Array();
+        this.blocks = new Array();
+        objects = worldfile.rooms[x + y * 16].objects;
+        objects.forEach(function(item, index, array) {
+            if (item[0] < 100) {
+                Game.objects.push(
+                    getEnemy(item));
+            } else if (item[0] < 200) {
+                Game.blocks.push(new Block(item));
+            } else {
+                Arbitrary(item);
             }
         });
-        this.blocks.forEach(function(e) {
-            e.update();
-            if (e.active == false) {
-                var index = Game.blocks.indexOf(e);
-                Game.blocks.splice(index, 1);
-            }
-        });
-    } else if (this.mode == GameStage.DieMode || this.mode == GameStage.WinMode) {
-        this.animCount = this.animCount - 2;
-        if (this.animCount <= 0) {
-            if (this.mode == GameStage.DieMode)
-                this.reload();
-            else {
-                activated = false;
-            }
-        }
-    } else if (this.mode == GameStage.PauseMode) {
-        if (this.lag > 0) {
-            this.lag = this.lag - 1;
-        } else {
+    },
+
+    tryloadroom: function(x, y) {
+        if (x < 0 || y < 0 || x >= 16 || y >= 16)
+            return false;
+        if (worldfile.rooms[x + y * 16] == 0)
+            return false;
+        this.loadroom(x, y)
+        return true;
+    },
+
+    update: function() {
+        if (this.mode == GameStage.RunMode) {
             if (Controls.Enter) {
-                this.mode = GameStage.RunMode;
                 this.lag = 20;
                 Controls.Enter = false;
+                this.mode = GameStage.PauseMode;
+                PlaySound("pause");
             }
-        }
-    } else if (this.mode == GameStage.TextMode) {
-        if (this.lag > 0) {
-            this.lag = this.lag - 1;
-        } else {
-            if (Controls.Shoot) {
-                this.step = this.step + 2;
-                if (this.step >= this.displayText.length) {
+            this.player.moving = false;
+            if (Controls.Up) {
+                this.player.moving = true;
+                this.player.direction = 1;
+            } else if (Controls.Down) {
+                this.player.moving = true;
+                this.player.direction = 0;
+            } else if (Controls.Left) {
+                this.player.moving = true;
+                this.player.direction = 2;
+            } else if (Controls.Right) {
+                this.player.moving = true;
+                this.player.direction = 3;
+            }
+            if (this.shootLag <= 0) {
+                if (Controls.Shoot) {
+                    this.shootLag = 50;
+                    var spoke = false;
+                    for(var i = 0; i < Game.objects.length; i++) {
+                        var e = Game.objects[i];
+                        if ((e.x-Game.player.x)*(e.x-Game.player.x) + (e.y-Game.player.y)*(e.y-Game.player.y) < 24*24) {
+                            if (e.speak) {
+                                e.speak();
+                                spoke=true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!spoke) {
+                        PlaySound("pew");
+                        this.objects.push(new Projectile(this.player.x, this.player.y,  this.player.direction, this.player.aspect));
+                    }
+                }
+            } else
+                this.shootLag = this.shootLag - 1;
+
+            this.player.update();
+
+            this.objects.forEach(function(e) {
+                e.update();
+                if (e.active == false) {
+                    var index = Game.objects.indexOf(e);
+                    Game.objects.splice(index, 1);
+                } else if (Math.pow(e.x - Game.player.x, 2) + Math.pow(e.y - Game.player.y, 2) < 100) {
+                    e.collect()
+                }
+            });
+            this.blocks.forEach(function(e) {
+                e.update();
+                if (e.active == false) {
+                    var index = Game.blocks.indexOf(e);
+                    Game.blocks.splice(index, 1);
+                }
+            });
+        } else if (this.mode == GameStage.DieMode || this.mode == GameStage.WinMode) {
+            this.animCount = this.animCount - 2;
+            if (this.animCount <= 0) {
+                if (this.mode == GameStage.DieMode)
+                    this.reload();
+                else {
+                    activated = false;
+                }
+            }
+        } else if (this.mode == GameStage.PauseMode) {
+            if (this.lag > 0) {
+                this.lag = this.lag - 1;
+            } else {
+                if (Controls.Enter) {
                     this.mode = GameStage.RunMode;
                     this.lag = 20;
+                    Controls.Enter = false;
                 }
-                Controls.Shoot = false;
+            }
+        } else if (this.mode == GameStage.TextMode) {
+            if (this.lag > 0) {
+                this.lag = this.lag - 1;
+            } else {
+                if (Controls.Shoot) {
+                    this.step = this.step + 2;
+                    if (this.step >= this.displayText.length) {
+                        this.mode = GameStage.RunMode;
+                        this.lag = 20;
+                    }
+                    Controls.Shoot = false;
+                }
             }
         }
-    }
-}
-
-// The draw function takes the context of the gamecanvas as a parameter
-Game.draw = function(ctx) {
-    ctx.imageSmoothingEnabled = false
-    this.drawRoom(ctx);
-    //if (this.mode == GameStage.RunMode) {
-    ctx.globalAlpha = 1.0;
-    /*}
-    else if (this.mode != GameStage.PauseMode) {
-    	ctx.globalAlpha = this.animCount / 255;
-    }*/
-    if (this.mode != GameStage.PauseMode) {
-        var drawable = this.objects.slice();
-        drawable.push(this.player);
-        drawable.sort(function(a, b) {
-        return parseFloat(a.y) - parseFloat(b.y);
-        });
-        for (var i=0; i < drawable.length; i++) {
-            drawable[i].draw(ctx);
+    },
+    
+    draw: function(ctx) {
+        ctx.imageSmoothingEnabled = false
+        this.drawRoom(ctx);
+        //if (this.mode == GameStage.RunMode) {
+        ctx.globalAlpha = 1.0;
+        /*}
+        else if (this.mode != GameStage.PauseMode) {
+            ctx.globalAlpha = this.animCount / 255;
+        }*/
+        if (this.mode != GameStage.PauseMode) {
+            var drawable = this.objects.slice();
+            drawable.push(this.player);
+            drawable.sort(function(a, b) {
+            return parseFloat(a.y) - parseFloat(b.y);
+            });
+            for (var i=0; i < drawable.length; i++) {
+                drawable[i].draw(ctx);
+            }
+            /*this.objects.forEach(function(e) {
+                e.draw(ctx)
+            });
+            this.player.draw(ctx);*/
+            
         }
-        /*this.objects.forEach(function(e) {
-            e.draw(ctx)
-        });
-        this.player.draw(ctx);*/
-        
-    }
-    if (this.mode == GameStage.WinMode) {
-        this.player.draw(ctx);
-    }
-    if (this.mode == GameStage.TextMode) {
-        this.drawText(ctx)
-    } else
-        this.drawUI(ctx);
-}
+        if (this.mode == GameStage.WinMode) {
+            this.player.draw(ctx);
+        }
+        if (this.mode == GameStage.TextMode) {
+            this.drawText(ctx)
+        } else
+            this.drawUI(ctx);
+    },
 
-Game.drawRoom = function(ctx) {
+    drawRoom: function(ctx) {
         var i = 0;
         for (var y = 0; y < 8; y++) {
             for (var x = 0; x < 10; x++) {
@@ -284,91 +279,89 @@ Game.drawRoom = function(ctx) {
         this.blocks.forEach(function(e) {
             e.draw(ctx);
         });
-    }
+    },
     
-Game.drawText = function(ctx) {
-    ctx.clearRect(0, 104, 160, 40);
-    drawText(ctx, 8, 112, this.displayText[this.step]);
-    drawText(ctx, 8, 128, this.displayText[this.step + 1]);
-}
+    drawText: function(ctx) {
+        ctx.clearRect(0, 104, 160, 40);
+        drawText(ctx, 8, 112, this.displayText[this.step]);
+        drawText(ctx, 8, 128, this.displayText[this.step + 1]);
+    },
     
-Game.drawUI = function(ctx) {
-    drawText(ctx, 0, 144-16, " AREA   KEYS   CRYS ");
-    drawNumber(ctx, 2*8, 144-8, this.area, 2);
-    drawNumber(ctx, 9*8, 144-8, this.keys, 2);
-    drawNumber(ctx, 16*8, 144-8, this.crystals, 2);
-    // draw keys, crystals
-    ctx.drawImage(Game.objectimage, 11 * 16, 0, 16, 16, 6*8, 144-16, 16, 16);
-    ctx.drawImage(Game.objectimage, 12 * 16, 0, 16, 16, 13*8, 144-16, 16, 16);
-}
+    drawUI: function(ctx) {
+        drawText(ctx, 0, 144-16, " AREA   KEYS   CRYS ");
+        drawNumber(ctx, 2*8, 144-8, this.area, 2);
+        drawNumber(ctx, 9*8, 144-8, this.keys, 2);
+        drawNumber(ctx, 16*8, 144-8, this.crystals, 2);
+        // draw keys, crystals
+        ctx.drawImage(Game.objectimage, 11 * 16, 0, 16, 16, 6*8, 144-16, 16, 16);
+        ctx.drawImage(Game.objectimage, 12 * 16, 0, 16, 16, 13*8, 144-16, 16, 16);
+    },
 
-Game.textBox = function(text) {
-    var newtext = [];
-    for(var i=0; i < text.length; i++) {
-        var str = "";
-        var words = text[i].split(" ");
-        for(var j=0; j < words.length; j++) {
-            var word = words[j];
-            if (word.length + str.length > 18) {
-                newtext.push(str);
-                str = word + " ";
-            } else {
-                str = str + word + " ";
+    textBox: function(text) {
+        var newtext = [];
+        for(var i=0; i < text.length; i++) {
+            var str = "";
+            var words = text[i].split(" ");
+            for(var j=0; j < words.length; j++) {
+                var word = words[j];
+                if (word.length + str.length > 18) {
+                    newtext.push(str);
+                    str = word + " ";
+                } else {
+                    str = str + word + " ";
+                }
             }
+            newtext.push(str);
+            if (newtext.length % 2 != 0)
+                newtext.push("");
         }
-        newtext.push(str);
-        if (newtext.length % 2 != 0)
-            newtext.push("");
-    }
-    Game.displayText = newtext;
-    Game.step = 0;
-    Game.mode = GameStage.TextMode;
-    Game.lag = 20;
-    Controls.Shoot = false;
-}
+        Game.displayText = newtext;
+        Game.step = 0;
+        Game.mode = GameStage.TextMode;
+        Game.lag = 20;
+        Controls.Shoot = false;
+    },
 
     // Functions regarding the map
-
-Game.isSolid = function(x, y, self) {
-    var tile = Game.getTile(x, y)
-    if (tile == 1)
-        return true;
-    else if (tile == 5 && self instanceof Enemy)
-        return true;
-    else if (tile == 8 && !(self instanceof Projectile))
-        return true;
-    
-    var pass = false;
-    for(var i = 0; i < Game.blocks.length; i++) {
-        var block = Game.blocks[i];
-        if (Math.abs(block.x - x) <= 8 && Math.abs(block.y - y) <= 8) {
-            if (self instanceof Player)
-                pass = pass || block.collide();
-            else
-                pass = pass || block.contact(self); //return true;
+    isSolid: function(x, y, self) {
+        var tile = Game.getTile(x, y)
+        if (tile == 1)
+            return true;
+        else if (tile == 5 && self instanceof Enemy)
+            return true;
+        else if (tile == 8 && !(self instanceof Projectile))
+            return true;
+        
+        var pass = false;
+        for(var i = 0; i < Game.blocks.length; i++) {
+            var block = Game.blocks[i];
+            if (Math.abs(block.x - x) <= 8 && Math.abs(block.y - y) <= 8) {
+                if (self instanceof Player)
+                    pass = pass || block.collide();
+                else
+                    pass = pass || block.contact(self); //return true;
+            }
         }
-    }
-    
-    if (tile == 6 && self instanceof Player)
-        return true;
-    else
-        return pass;
-    
-    //var i = Math.floor(x / 16) + 10 * Math.floor(y / 16);
-    //return worldfile.key[this.tileMap[i]] == 1;
-}
+        
+        if (tile == 6 && self instanceof Player)
+            return true;
+        else
+            return pass;
+        
+    },
 
-Game.getTile = function(x, y) {
-    var i = Math.floor(x / 16) + 10 * Math.floor(y / 16);
-    return worldfile.key[this.tileMap[i]];
-}
+    getTile: function(x, y) {
+        var i = Math.floor(x / 16) + 10 * Math.floor(y / 16);
+        return worldfile.key[this.tileMap[i]];
+    },
 
-Game.squareSolid = function(x, y, self) {
-    // Checks whether a square centered at loc is at all solid
-    return Game.isSolid(x, y - 6, self) || Game.isSolid(x, y + 6, self) ||
-        Game.isSolid(x - 6, y, self) || Game.isSolid(x + 6, y, self) ||
-        Game.isSolid(x - 6, y - 6, self) || Game.isSolid(x - 6, y + 6, self) ||
-        Game.isSolid(x + 6, y - 6, self) || Game.isSolid(x + 6, y + 6, self);
+    squareSolid: function(x, y, self) {
+        // Checks whether a square centered at loc is at all solid
+        return Game.isSolid(x, y - 6, self) || Game.isSolid(x, y + 6, self) ||
+            Game.isSolid(x - 6, y, self) || Game.isSolid(x + 6, y, self) ||
+            Game.isSolid(x - 6, y - 6, self) || Game.isSolid(x - 6, y + 6, self) ||
+            Game.isSolid(x + 6, y - 6, self) || Game.isSolid(x + 6, y + 6, self);
+    },
 }
 
 // GameObject
