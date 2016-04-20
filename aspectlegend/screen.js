@@ -1,11 +1,12 @@
 TitleScreen = {
+    selection: 0,
     update: function() {
         if (Controls.Enter || Controls.Shoot) {
             Controls.Enter = false;
-            if (selection == 0) {
+            if (this.selection == 0) {
                 // New Game
                 Game.activate(true);
-            } else if (selection == 1) {
+            } else if (this.selection == 1) {
                 // Continue
                 var saved = localStorage.getItem('saved');
                 if (saved === null) {
@@ -14,19 +15,19 @@ TitleScreen = {
                     Game.snapshot = JSON.parse(saved);
                     Game.activate(false);
                 }
-            } else if (selection == 2) {
+            } else if (this.selection == 2) {
                 __debug = true;
                 var saved = localStorage.getItem('saved');
                 Game.snapshot = JSON.parse(saved);
                 Game.activate(false);
             }
         } else if (Controls.Up) {
-            if (selection != 0)
-                selection--;
+            if (this.selection != 0)
+                this.selection--;
             Controls.Up = false;
         }   else if (Controls.Down) {
-            if (selection != 2)
-                selection++;
+            if (this.selection != 2)
+                this.selection++;
             Controls.Down = false;
         }
     },
@@ -36,7 +37,7 @@ TitleScreen = {
         drawText(ctx, 8*8, 10*8, "New Game");
         drawText(ctx, 8*8, 12*8, "Continue");
         drawText(ctx, 8*8, 14*8, "Debug Load");
-        drawText(ctx, 6*8, (10 + (selection*2))*8, [26]);
+        drawText(ctx, 6*8, (10 + (this.selection*2))*8, [26]);
         drawText(ctx, 2*8, 16*8, "(c) 2016 Nicole");
     },
 };

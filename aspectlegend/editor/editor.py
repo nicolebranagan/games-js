@@ -304,27 +304,34 @@ class Application(tk.Frame):
 
     def save(self):
         filen = filedialog.asksaveasfilename(
-                defaultextension=".json",
-                initialfile="world.json",
+                defaultextension=".js",
+                initialfile="worldfile.js",
                 initialdir="../",
-                filetypes=(("JSON files", "*.json"),
+                filetypes=(("Javascript files", "*.js"),
                            ("All files", "*")),
                 title="Save")
         if filen != () and filen != "":
             with open(filen, "w") as fileo:
-                json.dump(self.roomset.dump(), fileo)
+                fileo.seek(0)
+                fileo.write("var worldfile = \n"+json.dumps(self.roomset.dump()))
+                fileo.truncate()
 
     def open(self):
         filen = filedialog.askopenfilename(
-                defaultextension=".json",
-                initialfile="world.json",
+                defaultextension=".js",
+                initialfile="worldfile.js",
                 initialdir="../",
-                filetypes=(("JSON files", "*.json"),
+                filetypes=(("Javascript files", "*.js"),
                            ("All files", "*")),
                 title="Save")
         if filen != () and filen != "":
             with open(filen, "r") as fileo:
-                self.roomset.load(json.load(fileo))
+                header = fileo.readline()
+                if header != "var worldfile = \n":
+                    print("Not a proper worldfile")
+                    return
+                data = fileo.readline()
+                self.roomset.load(json.loads(data))
             self.drawgrid(0,0)
             self.currentx = 0
             self.currenty = 0
