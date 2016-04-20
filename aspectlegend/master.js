@@ -155,6 +155,11 @@ function drawText(ctx, x, y, text) {
     }
 }
 
+function drawCenteredText(ctx, y, text) {
+    var x = Math.floor(80 - (8*(text.length/2)));
+    drawText(ctx, x, y, text);
+}
+
 function drawNumber(ctx, x, y, num, len) {
     chars = num.toString();
     while(chars.length < len)

@@ -935,7 +935,7 @@ Block.prototype = {
     
     push: function(dir) {
         this.pushCount++;
-        if (this.pushCount == 4)
+        if (this.pushCount == 6)
             this.move(dir);
     },
     

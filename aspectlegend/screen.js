@@ -82,4 +82,21 @@ var LogoScreen = {
             };
         }
     }
+};
+
+var TextScreen = function(text) {
+    this.text = text;
+};
+
+TextScreen.prototype = {
+    timer: 0,
+    draw: function(ctx) {
+        cycles = Math.floor(this.timer / 4) - (144 / 2);
+        for (var i = 0; i < this.text.length; i++) {
+            drawCenteredText(ctx, i*16 - cycles, this.text[i]);
+        }
+    },
+    update: function() {
+        this.timer++;
+    },
 }
