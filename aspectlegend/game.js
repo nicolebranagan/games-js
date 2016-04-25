@@ -11,6 +11,7 @@ var Game = {
     area: 0,
     crystals: 0,
     flipped: false,
+    music: [,"cave",,,,,,,,,],
     
     activate: function(newgame) {
         PlaySound("start");
@@ -113,6 +114,8 @@ var Game = {
         this.y = y;
         this.tileMap = worldfile.rooms[x + y * 16].tiles;
         this.area = worldfile.rooms[x + y * 16].area;
+        
+        PlayMusic(this.music[this.area]);
 
         this.objects = new Array();
         this.blocks = new Array();
@@ -558,6 +561,7 @@ Enemy.prototype.update = function() {
 Enemy.prototype.collect = function() {
     Game.mode = GameStage.DieMode;
     Game.animCount = 512;
+    PlayMusic();
     PlaySound("die");
 }
 Enemy.prototype.hurt = function(aspect) {
@@ -881,7 +885,6 @@ Block.prototype = {
     moveTimer: 0,
     dir: 0,
     lag: 0,
-    
     splitTimer: 0,
     
     update: function () {

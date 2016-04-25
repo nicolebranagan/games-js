@@ -154,4 +154,25 @@ PlaySound = function(sound) {
     snd.play();
 }
 
+// Play music
+
+var bgMusic = new Audio();
+var currentSong = "";
+bgMusic.loop = true;
+bgMusic.volume = 0.6;
+PlayMusic = function(sound) {
+    if (currentSong === sound)
+        return;
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+    if (!sound) {
+        this.currentSong = "";
+        // Stop music if there is no argument
+        return;
+    }
+    bgMusic.src = "./music/" + sound + ".mp3";
+    currentSong = sound;
+    bgMusic.play();
+}
+
 Loop();
