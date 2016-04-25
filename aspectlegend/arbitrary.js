@@ -77,6 +77,7 @@ arbKillAll.prototype = {
     update: function() {
         if (this.active && !this.needKey) {
             if (this.check()) {
+                PlaySound("appear");
                 Game.blocks.push(new Block(this.reward));
                 this.needKey = true;
             }
@@ -175,6 +176,7 @@ wideDoor.prototype = {
     collide: function() { 
         if (this.active && this.splitTimer == 16) {
             if (Game.keys > 0) {
+                PlaySound("push");
                 Game.keys--;
                 this.invar[3] = false;
                 this.splitTimer = 15;

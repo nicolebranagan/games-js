@@ -159,7 +159,7 @@ PlaySound = function(sound) {
 var bgMusic = new Audio();
 var currentSong = "";
 bgMusic.loop = true;
-bgMusic.volume = 0.6;
+bgMusic.volume = 0.5;
 PlayMusic = function(sound) {
     if (currentSong === sound)
         return;

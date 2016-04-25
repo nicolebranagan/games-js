@@ -1,4 +1,8 @@
-TitleScreen = {
+TitleScreen = function() {
+    PlayMusic("title");
+};
+
+TitleScreen.prototype = {
     selection: 0,
     update: function() {
         if (Controls.Enter || Controls.Shoot) {
@@ -52,13 +56,13 @@ var LogoScreen = {
         this.sprite.update();
         this.timer++;
         if (this.timer > 320) {
-            runner = TitleScreen;
+            runner = new TitleScreen();
         }
         if (this.timer == 110 || this.timer == 186)
             PlaySound("whistle");
         if (Controls.Enter) {
             Controls.Enter = false;
-            runner = TitleScreen;
+            runner = new TitleScreen();
         };
     },
     sprite: {

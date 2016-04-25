@@ -11,10 +11,10 @@ var Game = {
     area: 0,
     crystals: 0,
     flipped: false,
-    music: [,"cave",,,,,,,,,],
+    music: ["mystery","cave",,"under",,,,,,,],
     
     activate: function(newgame) {
-        PlaySound("start");
+        PlaySound("aspect");
 
         this.objectimage = new Image();
         this.objectimage.src = "./images/objects.png"
@@ -822,6 +822,7 @@ function Block(invar) {
         this.collide = function() {
             if (this.active) {
                 Game.keys++;
+                PlaySound("key");
                 this.active = false;
                 this.invar[3] = false;
             }
@@ -832,6 +833,7 @@ function Block(invar) {
             if (this.active && this.splitTimer == 0) {
                 if (Game.keys > 0) {
                     Game.keys--;
+                    PlaySound("push");
                     this.invar[3] = false;
                     this.splitTimer = 8;
                 }
@@ -930,6 +932,7 @@ Block.prototype = {
             x = x + 16;
         
         if (!Game.isSolid(x, y, this) && (x >= 8 && y >= 8 && x <= 152 && y <= 120)) {
+            PlaySound("push");
             this.moveTimer = 16;
             this.dir = dir;
         } else
@@ -940,8 +943,9 @@ Block.prototype = {
     
     push: function(dir) {
         this.pushCount++;
-        if (this.pushCount == 6)
+        if (this.pushCount == 6) {
             this.move(dir);
+        }
     },
     
     collide: function() { this.active = false; return false; },
