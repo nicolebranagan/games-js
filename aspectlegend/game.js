@@ -11,7 +11,7 @@ var Game = {
     area: 0,
     crystals: 0,
     flipped: false,
-    music: ["mystery","cave",,"under",,,,,,,],
+    music: ["mystery","cave","frenzy","under",,,,,,,],
     
     activate: function(newgame) {
         PlaySound("aspect");
@@ -89,7 +89,7 @@ var Game = {
         }
 
         this.mode = GameStage.RunMode;
-        this.loadroom(this.snapshot.roomx, this.snapshot.roomy);
+        this.loadroom(this.snapshot.roomx, this.snapshot.roomy, true);
     },
 
     save: function() {
@@ -107,7 +107,10 @@ var Game = {
         localStorage.setItem('saved', JSON.stringify(this.snapshot));
     },
 
-    loadroom: function(x, y) {
+    loadroom: function(x, y, skip) {
+        var oldroom = this.tileMap;
+        var oldx = this.roomx;
+        var oldy = this.roomy;
         this.roomx = x;
         this.roomy = y;
         this.x = x;
@@ -130,6 +133,9 @@ var Game = {
                 Arbitrary(item);
             }
         });
+        
+        if (!skip)
+            runner = new FlipScreen(oldroom, this.tileMap, oldx != x, oldx < x || oldy < y);
     },
 
     tryloadroom: function(x, y) {

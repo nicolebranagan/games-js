@@ -105,3 +105,57 @@ TextScreen.prototype = {
         this.timer++;
     },
 };
+
+var FlipScreen = function(oldscreen, newscreen, horz, newLeftTop) {
+    this.oldscreen = oldscreen;
+    this.newscreen = newscreen;
+    this.horz = horz;
+    this.newLeftTop = newLeftTop;
+    this.timer = 0;
+}
+
+FlipScreen.prototype = {
+    width: 160,
+    
+    height: 140 - 16,
+    
+    update: function() {
+        this.timer = this.timer + 2;
+        if (this.horz) {
+            if (this.timer >= this.width)
+                runner = Game;
+        } else {
+            if (this.timer >= this.height)
+                runner = Game;
+        }
+    },
+    
+    draw: function(ctx) {
+        var offsetx = 0;
+        var offsety = 0;
+        var screen1 = this.oldscreen; 
+        var screen2 = this.newscreen;
+        var timer = this.timer;
+        var del = 1;
+        if (this.newLeftTop)
+            del = -1;
+        if (this.horz) {
+            this.drawRoom(ctx, screen1, del*timer, 0);
+            this.drawRoom(ctx, screen2, del*(timer - this.width), 0);
+            Game.drawUI(ctx);
+        } else {
+            this.drawRoom(ctx, screen1, 0, del*timer);
+            this.drawRoom(ctx, screen2, 0, del*(timer - this.height));
+        }
+    },
+    
+    drawRoom: function(ctx, room, offsetx, offsety) {
+       var i = 0;
+        for (var y = 0; y < 8; y++) {
+            for (var x = 0; x < 10; x++) {
+                ctx.drawImage(Game.bgimage, 16 * room[i], 0, 16, 16, x * 16 + offsetx, y * 16 + offsety, 16, 16);
+                i++;
+            }
+        };
+    },
+}
