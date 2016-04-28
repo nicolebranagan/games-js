@@ -142,11 +142,15 @@ FlipScreen.prototype = {
         if (this.horz) {
             this.drawRoom(ctx, screen1, del*timer, 0);
             this.drawRoom(ctx, screen2, del*(timer - this.width), 0);
-            Game.drawUI(ctx);
         } else {
             this.drawRoom(ctx, screen1, 0, del*timer);
             this.drawRoom(ctx, screen2, 0, del*(timer - this.height));
         }
+        // Draw UI box
+        if (!this.horz) {
+            ctx.clearRect(0, gamecanvas.height-16, gamecanvas.width, 16);
+        }
+        Game.drawUI(ctx);
     },
     
     drawRoom: function(ctx, room, offsetx, offsety) {

@@ -267,7 +267,6 @@ getRunner = function(invar, row, text, rundir) {
         this._update();
     }
     runner.boundscheck = function() {
-        console.log("bounds");
         this.active = false;
         this.invar[3] = false;
     }
