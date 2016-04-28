@@ -878,6 +878,14 @@ function Block(invar) {
         this.contact = function(caller) { 
             return !(Game.flipped);
         }
+    } else if (this.type == 109) {
+        this.draw = function() {
+            ctx.drawImage(Game.bgimage, (3 + (Game.flipped ? 0 : 5)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
+        }
+        this.collide = function() { return this.contact(Game.player); }
+        this.contact = function(caller) { 
+            return (Game.flipped);
+        }
     }
 }
 

@@ -28,6 +28,7 @@ TypeLabel = {
     "Lock": 106,
     "Flipper" : 107,
     "FlipBlock" : 108,
+    "FlippedBlock" : 109,
 }
 Type = {v: k for k, v in TypeLabel.items()}
 
@@ -139,7 +140,7 @@ class Application(tk.Frame):
         self.selectedblock.set(Type[100])
         tk.OptionMenu(
                 controls, self.selectedblock, 
-                *[Type[x] for x in range(100,109)]).grid(
+                *[Type[x] for x in range(100,110)]).grid(
                     row=4, column=0)
         addblockbutton = tk.Button(controls, text="Add", 
                                    command=lambda: self.addobject(

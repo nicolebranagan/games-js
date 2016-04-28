@@ -55,6 +55,15 @@ Arbitrary = function(invar) {
         var talker = getTalker(invar, 6, ["Before the town was destroyed, the people developed submarine technology.", "Maybe this was a punishment from the god-empress for their sins?"], false);
         talker.direction = 2;
         Game.objects.push(talker);
+    } else if (invar[0] == 214) {
+        var crys = getCrystal(invar);
+        crys.collide = function() {
+            if (this.active != false) {
+                Game.textBox(["This crystal looks like it's being used as a power source!", "Well, they're certainly not using it."]);
+                this._collide();
+            }
+        }
+        Game.blocks.push(crys);
     }
 }
 
@@ -284,14 +293,18 @@ getCrystal = function(invar) {
             this.drawCount++;
             if (this.drawCount == 4) this.drawCount = 0;
             this.lag = 15;
+            if (this.invar[3] == false)
+                this.active = false;
         }
         else
             this.lag--;
     }
     crystal._collide = function() {
-        Game.crystals++;
-        this.active = false;
-        this.invar[3] = false;
+        if (this.invar[3]) {
+            Game.crystals++;
+            this.invar[3] = false;
+            this.lag = 3;
+        }
     }
     crystal.collide = function() {
         if (this.active)
