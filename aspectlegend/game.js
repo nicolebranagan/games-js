@@ -583,7 +583,7 @@ getEnemy = function(invar) {
     enemy.y = invar[2] * 16 + 8;
     enemy.type = Math.floor(invar[0] / 3);
     enemy.aspect = invar[0] % 3;
-    enemy.row = enemy.type + 2;
+    enemy.row = enemy.type + 8;
     if (enemy.type == 0) {
         // Still Enemy
         enemy.speed = 0;

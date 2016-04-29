@@ -29,14 +29,14 @@ Arbitrary = function(invar) {
         }
         Game.blocks.push(crys);
     } else if (invar[0] == 208) {
-        var talker = getTalker(invar, 6, ["Everyone in this town turned to stone one day.", "...", "Of course we had nothing to do with it!"], false);
+        var talker = getTalker(invar, 2, ["Everyone in this town turned to stone one day.", "...", "Of course we had nothing to do with it!"], false);
         talker.direction = 3;
         Game.objects.push(talker);
     } else if (invar[0] == 209) {
-        var talker = getTalker(invar, 6, ["The cult of the god-empress is trying to investigate matters here.", "Our leader has set up camp in the southern part of the town."], false);
+        var talker = getTalker(invar, 2, ["The cult of the god-empress is trying to investigate matters here.", "Our leader has set up camp in the southern part of the town."], false);
         Game.objects.push(talker);
     } else if (invar[0] == 210) {
-        var talker = getTalker(invar, 6, ["The bridge to the southern part of the town has collapsed!", "And I'm certainly not going to get my robe wet!"], false);
+        var talker = getTalker(invar, 2, ["The bridge to the southern part of the town has collapsed!", "And I'm certainly not going to get my robe wet!"], false);
         talker.direction = 3;
         Game.objects.push(talker);
     } else if (invar[0] == 211) {
@@ -48,11 +48,11 @@ Arbitrary = function(invar) {
             }
         }));
     } else if (invar[0] == 212) {
-        var talker = getTalker(invar, 6, ["These poor imperial guards...", "I'd say I feel bad for their families, but I believe they're cloned from birth now."], false);
+        var talker = getTalker(invar, 2, ["These poor imperial guards...", "I'd say I feel bad for their families, but I believe they're cloned from birth now."], false);
         talker.direction = 1;
         Game.objects.push(talker);
     } else if (invar[0] == 213) {
-        var talker = getTalker(invar, 6, ["Before the town was destroyed, the people developed submarine technology.", "Maybe this was a punishment from the god-empress for their sins?"], false);
+        var talker = getTalker(invar, 2, ["Before the town was destroyed, the people secretly developed submarine technology.", "Maybe this tragedy was a punishment from the god-empress for their sins?"], false);
         talker.direction = 2;
         Game.objects.push(talker);
     } else if (invar[0] == 214) {
