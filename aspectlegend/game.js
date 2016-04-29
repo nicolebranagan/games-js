@@ -28,10 +28,6 @@ var Game = {
 
     reset: function(newgame) {
         this.player = new Player();
-        /*this.shootLag = 0;
-        this.lag = 0;
-        this.keys = 0;
-        this.crystals = 0;*/
         
         // Clean worldfile
         worldfile.rooms.forEach(function(e1, i) {
@@ -50,7 +46,7 @@ var Game = {
                 if (e != 0) {
                     var invar = [];
                     for(var j=0; j<e.objects.length; j++) {
-                        invar[j] = true; //e.objects[j][3];
+                        invar[j] = true;
                     }
                     this.snapshot.objects[i] = invar;
                 }
@@ -154,6 +150,7 @@ var Game = {
                 Controls.Enter = false;
                 this.mode = GameStage.PauseMode;
                 PlaySound("pause");
+                PauseMusic();
             }
             this.player.moving = false;
             if (Controls.Up) {
@@ -226,6 +223,7 @@ var Game = {
                     this.mode = GameStage.RunMode;
                     this.lag = 20;
                     Controls.Enter = false;
+                    PauseMusic();
                 }
             }
         } else if (this.mode == GameStage.TextMode) {

@@ -174,5 +174,11 @@ PlayMusic = function(sound) {
     currentSong = sound;
     bgMusic.play();
 }
+PauseMusic = function() {
+    if (bgMusic.paused)
+        bgMusic.play();
+    else
+        bgMusic.pause();
+}
 
 Loop();

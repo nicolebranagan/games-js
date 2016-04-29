@@ -68,6 +68,10 @@ Arbitrary = function(invar) {
         var runner = getRunner(invar, 1, ["\"Meow!\"", "I almost get the impression the cat is in my thoughts, but I push that idea away."], 2);
         runner.direction = 3;
         Game.objects.push(runner);
+    } else if (invar[0] == 216) {
+        var runner = getRunner(invar, 1, ["[Hello sister]", "I push the voice out of my head.", "And yet the cat seems so familiar..."], 2);
+        runner.direction = 3;
+        Game.objects.push(runner);
     }
 }
 
