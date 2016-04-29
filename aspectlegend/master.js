@@ -1,3 +1,5 @@
+"use strict";
+
 var gamecanvas = document.getElementById('gamecanvas');
 var gamecontrols = document.getElementById('gamecontrols');
 var runner = LogoScreen;
@@ -14,7 +16,7 @@ Font.src = "./images/cgafont.png";
 
 function Loop() {
     setTimeout(Loop, 500 / 60);
-    ctx = gamecanvas.getContext("2d");
+    var ctx = gamecanvas.getContext("2d");
     ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
     runner.update();
     runner.draw(ctx);
@@ -125,7 +127,7 @@ function getRandomInt(min, max) {
 // Text-drawing functions
 
 function drawText(ctx, x, y, text) {
-    for (i = 0; i < text.length; i++) {
+    for (var i = 0; i < text.length; i++) {
         var num;
         if (typeof text == "string")
             num = text.charCodeAt(i);
@@ -141,7 +143,7 @@ function drawCenteredText(ctx, y, text) {
 }
 
 function drawNumber(ctx, x, y, num, len) {
-    chars = num.toString();
+    var chars = num.toString();
     while(chars.length < len)
         chars = "0" + chars
     drawText(ctx, x, y, chars);
@@ -149,7 +151,7 @@ function drawNumber(ctx, x, y, num, len) {
 
 // Play sound effects
 
-PlaySound = function(sound) {
+var PlaySound = function(sound) {
     var snd = new Audio("./sound/" + sound + ".wav");
     snd.play();
 }
@@ -160,13 +162,13 @@ var bgMusic = new Audio();
 var currentSong = "";
 bgMusic.loop = true;
 bgMusic.volume = 0.5;
-PlayMusic = function(sound) {
+var PlayMusic = function(sound) {
     if (currentSong === sound)
         return;
     bgMusic.pause();
     bgMusic.currentTime = 0;
     if (!sound) {
-        this.currentSong = "";
+        currentSong = "";
         // Stop music if there is no argument
         return;
     }
@@ -174,7 +176,7 @@ PlayMusic = function(sound) {
     currentSong = sound;
     bgMusic.play();
 }
-PauseMusic = function() {
+var PauseMusic = function() {
     if (bgMusic.paused)
         bgMusic.play();
     else

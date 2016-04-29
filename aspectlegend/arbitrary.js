@@ -1,6 +1,8 @@
+"use strict";
+
 // Arbitrary objects
 
-Arbitrary = function(invar) {
+var Arbitrary = function(invar) {
     if (invar[0] == 200) {
         Game.objects.push(new arbKillAll(invar, 105));
     } else if (invar[0] == 201) {
@@ -75,7 +77,7 @@ Arbitrary = function(invar) {
     }
 }
 
-arbKillAll = function(invar, reward) {
+var arbKillAll = function(invar, reward) {
     this.invar = invar;
     this.active = invar[3];
     this.x = -1;
@@ -125,7 +127,7 @@ arbKillAll.prototype = {
     },
 }
 
-dummyBlock = function(x, y, master) {
+var dummyBlock = function(x, y, master) {
     this.x = x;
     this.y = y;
     this.active = true;
@@ -140,7 +142,7 @@ dummyBlock.prototype = {
     update: function() { ; }
 }
 
-wideDoor = function(invar, horz) {
+var wideDoor = function(invar, horz) {
     this.invar = invar;
     this.x = invar[1] * 16 + 8;
     this.y = invar[2] * 16 + 8;
@@ -207,8 +209,8 @@ wideDoor.prototype = {
     }
 }
 
-getTalker = function(invar, row, text, disappear) {
-    talker = new GameObject();
+var getTalker = function(invar, row, text, disappear) {
+    var talker = new GameObject();
     talker.x = invar[1] * 16 + 8;
     talker.y = invar[2] * 16 + 8;
     talker.disappear = disappear;
@@ -242,8 +244,8 @@ getTalker = function(invar, row, text, disappear) {
     return talker;
 }
 
-getTalkOnEnter = function(invar, text) {
-    talker = new GameObject();
+var getTalkOnEnter = function(invar, text) {
+    var talker = new GameObject();
     talker.x = 0;
     talker.y = 0;
     talker.invar = invar;
@@ -260,7 +262,7 @@ getTalkOnEnter = function(invar, text) {
     return talker;
 }
 
-getRunner = function(invar, row, text, rundir) {
+var getRunner = function(invar, row, text, rundir) {
     var runner = getTalker(invar, row, text, false);
     runner._speak = runner.speak;
     runner.running = false;
@@ -290,7 +292,7 @@ getRunner = function(invar, row, text, rundir) {
     return runner;
 }
 
-getCrystal = function(invar) {
+var getCrystal = function(invar) {
     var crystal = new Block(invar);
     crystal.drawCount = 0;
     crystal.draw = function(ctx) {
@@ -321,7 +323,7 @@ getCrystal = function(invar) {
     return crystal;
 }
 
-getDoor = function(invar, onhit) {
+var getDoor = function(invar, onhit) {
     var door = new Block(invar);
     door.drawCount = 0;
     door.draw = function(ctx) {

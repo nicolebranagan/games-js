@@ -1,4 +1,6 @@
-TitleScreen = function() {
+"use strict";
+
+var TitleScreen = function() {
     PlayMusic("title");
 };
 

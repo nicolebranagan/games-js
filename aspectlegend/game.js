@@ -1,3 +1,5 @@
+"use strict";
+
 var GameStage = {
     RunMode: 0,
     DieMode: 1,
@@ -109,8 +111,6 @@ var Game = {
         var oldy = this.roomy;
         this.roomx = x;
         this.roomy = y;
-        this.x = x;
-        this.y = y;
         this.tileMap = worldfile.rooms[x + y * 16].tiles;
         this.area = worldfile.rooms[x + y * 16].area;
         
@@ -118,7 +118,7 @@ var Game = {
 
         this.objects = new Array();
         this.blocks = new Array();
-        objects = worldfile.rooms[x + y * 16].objects;
+        var objects = worldfile.rooms[x + y * 16].objects;
         objects.forEach(function(item, index, array) {
             if (item[0] < 100) {
                 Game.objects.push(
@@ -518,7 +518,7 @@ Player.prototype.boundscheck = function(x, y) {
         delx = 1
     else if (y >= 120)
         dely = 1
-    if (Game.tryloadroom(Game.x + delx, Game.y + dely)) {
+    if (Game.tryloadroom(Game.roomx + delx, Game.roomy + dely)) {
         if (delx == -1)
             this.x = 152
         else if (delx == 1)
@@ -556,8 +556,8 @@ Enemy.prototype.update = function() {
                         targetDir = 0;
                 }
                 this.direction = targetDir;
-            } else
-                faceDir = getRandomInt(0, 4);
+            } // else
+                //this.faceDir = getRandomInt(0, 4);
         }
     }
 };
@@ -575,7 +575,7 @@ Enemy.prototype.hurt = function(aspect) {
     }
 }
 
-getEnemy = function(invar) {
+var getEnemy = function(invar) {
     var enemy = new Enemy();
     enemy.x = invar[1] * 16 + 8;
     enemy.y = invar[2] * 16 + 8;
@@ -713,11 +713,11 @@ Projectile.prototype = {
             this.active = false;
             return;
         }
-        x = this.x;
-        y = this.y;
+        var x = this.x;
+        var y = this.y;
         
         for (var j = 0; j < Game.objects.length; j++) {
-            e = Game.objects[j]
+            var e = Game.objects[j]
             if (e instanceof Enemy) {
                 if (((e.x - this.x) * (e.x - this.x) + (e.y - this.y) * (e.y - this.y)) < 128) {
                     e.hurt(this.aspect);
@@ -845,7 +845,7 @@ function Block(invar) {
             return true;
         }
     } else if (this.type == 107) {
-        this.draw = function() {
+        this.draw = function(ctx) {
             ctx.drawImage(Game.bgimage, (7 - (Game.flipped ? 1 : 0)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
         }
         this.collide = function() { return this.contact(Game.player); }
@@ -869,7 +869,7 @@ function Block(invar) {
             }
         }
     } else if (this.type == 108) {
-        this.draw = function() {
+        this.draw = function(ctx) {
             ctx.drawImage(Game.bgimage, (3 + (Game.flipped ? 5 : 0)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
         }
         this.collide = function() { return this.contact(Game.player); }
@@ -877,7 +877,7 @@ function Block(invar) {
             return !(Game.flipped);
         }
     } else if (this.type == 109) {
-        this.draw = function() {
+        this.draw = function(ctx) {
             ctx.drawImage(Game.bgimage, (3 + (Game.flipped ? 0 : 5)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
         }
         this.collide = function() { return this.contact(Game.player); }
@@ -913,7 +913,7 @@ Block.prototype = {
                     this.x = this.x - 1;
                 else if (this.dir == 3)
                     this.x = this.x + 1;
-                this.move(x, y);
+                //this.move(x, y);
                 this.moveTimer--;
                 if (this.moveTimer == 0)
                     this.pushCount = 0;
@@ -932,8 +932,8 @@ Block.prototype = {
     },
     
     move: function(dir) {
-        x = this.x;
-        y = this.y;
+        var x = this.x;
+        var y = this.y;
         var delx = 0;
         var dely = 0;
         if (dir == 0)
