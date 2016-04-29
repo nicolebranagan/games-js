@@ -68,7 +68,7 @@ var Game = {
             this.keys = this.snapshot.keys;
             this.crystals = this.snapshot.crystals;
             this.mode = GameStage.RunMode;
-            this.loadroom(this.snapshot.roomx, this.snapshot.roomy);
+            this.loadroom(this.snapshot.roomx, this.snapshot.roomy, true);
             return;
         }
         this.shootLag = 0;
@@ -143,7 +143,7 @@ var Game = {
             return false;
         if (worldfile.rooms[x + y * 16] == 0)
             return false;
-        this.loadroom(x, y)
+        this.loadroom(x, y, false)
         return true;
     },
 
@@ -936,16 +936,18 @@ Block.prototype = {
     move: function(dir) {
         x = this.x;
         y = this.y;
+        var delx = 0;
+        var dely = 0;
         if (dir == 0)
-            y = y + 16;
+            dely += 16;
         else if (dir == 1)
-            y = y - 16;
+            dely += -16;
         else if (dir == 2)
-            x = x - 16;
+            delx +=  -16;
         else if (dir == 3)
-            x = x + 16;
+            delx += 16;
         
-        if (!Game.isSolid(x, y, this) && (x >= 8 && y >= 8 && x <= 152 && y <= 120)) {
+        if (!Game.isSolid(x + delx, y + dely, this) && (!Game.isSolid(x - delx, y - dely, this)) && (x >= 8 && y >= 8 && x <= 152 && y <= 120)) {
             PlaySound("push");
             this.moveTimer = 16;
             this.dir = dir;

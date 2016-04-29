@@ -22,7 +22,7 @@ Arbitrary = function(invar) {
     } else if (invar[0] == 207) {
         var crys = getCrystal(invar);
         crys.collide = function() {
-            if (this.active != false) {
+            if (this.invar[3]) {
                 Game.textBox(["This crystal! I don't know the meaning of this, but I know it's important!", "I don't know why, but I get the impression that if I find more of these, it might restore my memory.", "...or at least it will give me something to do."]);
                 this._collide();
             }
@@ -58,12 +58,16 @@ Arbitrary = function(invar) {
     } else if (invar[0] == 214) {
         var crys = getCrystal(invar);
         crys.collide = function() {
-            if (this.active != false) {
+            if (this.invar[3]) {
                 Game.textBox(["This crystal looks like it's being used as a power source!", "Well, they're certainly not using it."]);
                 this._collide();
             }
         }
         Game.blocks.push(crys);
+    } else if (invar[0] == 215) {
+        var runner = getRunner(invar, 1, ["\"Meow!\"", "I almost get the impression the cat is in my thoughts, but I push that idea away."], 2);
+        runner.direction = 3;
+        Game.objects.push(runner);
     }
 }
 
@@ -326,7 +330,7 @@ getDoor = function(invar, onhit) {
             this.lag = 5;
             if (this.drawCount == 6) {
                 this.active = false;
-                this.invar[3] = false;
+                //this.invar[3] = false;
             }
         }
         else if (this.lag > 0)
