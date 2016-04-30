@@ -346,7 +346,7 @@ var Game = {
                 if (self instanceof Player)
                     pass = pass || block.collide();
                 else
-                    pass = pass || block.contact(self); //return true;
+                    pass = pass || (block.contact ? block.contact(self) : true); //return true;
             }
         }
         
