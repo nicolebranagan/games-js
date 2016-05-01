@@ -112,7 +112,10 @@ var Game = {
         this.roomx = x;
         this.roomy = y;
         this.tileMap = worldfile.rooms[x + y * 16].tiles;
-        this.area = worldfile.rooms[x + y * 16].area;
+        
+        // Don't change area if area == -1
+        if (worldfile.rooms[x + y * 16].area !== -1)
+            this.area = worldfile.rooms[x + y * 16].area;
         
         PlayMusic(this.music[this.area]);
 
@@ -170,17 +173,24 @@ var Game = {
                 if (Controls.Shoot) {
                     this.shootLag = 50;
                     var spoke = false;
+                    var speaker = null;
+                    var dist_to_speaker = Infinity;
                     for(var i = 0; i < Game.objects.length; i++) {
                         var e = Game.objects[i];
-                        if ((e.x-Game.player.x)*(e.x-Game.player.x) + (e.y-Game.player.y)*(e.y-Game.player.y) < 24*24) {
-                            if (e.speak) {
-                                e.speak();
+                        var d = (e.x-Game.player.x)*(e.x-Game.player.x) + (e.y-Game.player.y)*(e.y-Game.player.y);
+                        if (d < 24*24) {
+                            if (e.speak && d < dist_to_speaker) {
+                                speaker = e;
+                                dist_to_speaker = d;
+                                //e.speak();
                                 spoke=true;
-                                break;
+                                //break;
                             }
                         }
                     }
-                    if (!spoke) {
+                    if (spoke) {
+                        speaker.speak();
+                    } else {
                         PlaySound("pew");
                         this.objects.push(new Projectile(this.player.x, this.player.y,  this.player.direction, this.player.aspect));
                     }

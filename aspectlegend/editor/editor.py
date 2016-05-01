@@ -38,11 +38,12 @@ RoomColor = {
     2 : "#16AE49",
     3 : "#3048DE",
     4 : "#99EE59",
-    5 : "#34DE66",
+    5 : "#CCEEDD",
     6 : "#8899EE",
     7 : "#99EE88",
     8 : "#22EEFF",
-    9 : "#670000"
+    9 : "#670000",
+    -1 : "#FFFFFF",
 }
 
 class Application(tk.Frame):
@@ -109,9 +110,11 @@ class Application(tk.Frame):
         self.viewcanvas.bind("<Motion>", self.viewmove)
         self.viewcanvas.bind("<Button-2>", self.cviewclick)
         self.viewcanvas.bind("<Button-3>", self.rviewclick)
-        self.spinner = tk.Spinbox(viewpanel, from_=0, to=99, 
+        self.spinner = tk.Spinbox(viewpanel, from_=-1, to=99, 
                              command=lambda *x: 
                              self.room.setarea(int(self.spinner.get())))
+        self.spinner.delete(0, "end")
+        self.spinner.insert(0,0)
         self.spinner.grid(row=1, column=0)
 
         self.objectview = []

@@ -74,6 +74,34 @@ var Arbitrary = function(invar) {
         var runner = getRunner(invar, 1, ["[Hello sister]", "I push the voice out of my head.", "And yet the cat seems so familiar..."], 2);
         runner.direction = 3;
         Game.objects.push(runner);
+    } else if (invar[0] == 217) {
+        var talker = getTalker(invar, 2, ["It's happening to us now!", "He was my best friend...", "...", "...or was it she?"], false);
+        talker.direction = 3;
+        Game.objects.push(talker);
+    } else if (invar[0] == 218) {
+        var talker = getTalker(invar, 3, ["I am Miranda, leader of the cult of the god-empress.", 
+        "Something has happened to the town, but that is not all.", 
+        "The God-Empress herself, Princess Mary, has vanished, and her counterpart Nicole has followed suit.", 
+        "I fear that all these calamities are connected...",
+        "...",
+        "You seem familiar to me.",
+        "I do not know why I trust you, but I ask you, examine the abandoned imperial garrison to the south.",
+        "I feel as though there may be clues hidden within, but am not willing to risk any of my men.",
+        "Who knows what the Empire has been doing there?"], false);
+        talker.direction = 0;
+        Game.objects.push(talker);
+    } else if (invar[0] == 219) {
+        var talker2 = getTalker(invar, 2, ["Miranda is incredibly wise!"], false);
+        talker2.direction = 2;
+        Game.objects.push(talker2);
+    } else if (invar[0] == 220) {
+        var talker1 = getTalker(invar, 2, ["Miranda trusts you for some reason."], false);
+        talker1.direction = 3;
+        Game.objects.push(talker1);
+    } else if (invar[0] == 222) {
+        var talker = getTalker(invar, 2, ["This town was probably once a nice place to have a vacation!"], false);
+        talker.direction = 2;
+        Game.objects.push(talker);
     }
 }
 
