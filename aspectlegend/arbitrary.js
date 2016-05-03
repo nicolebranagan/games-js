@@ -80,15 +80,30 @@ var Arbitrary = function(invar) {
         Game.objects.push(talker);
     } else if (invar[0] == 218) {
         var talker = getTalker(invar, 3, ["I am Miranda, leader of the cult of the god-empress.", 
-        "Something has happened to the town, but that is not all.", 
-        "The God-Empress herself, Princess Mary, has vanished, and her counterpart Nicole has followed suit.", 
-        "I fear that all these calamities are connected...",
-        "...",
         "You seem familiar to me.",
-        "I do not know why I trust you, but I ask you, examine the abandoned imperial garrison to the south.",
-        "I feel as though there may be clues hidden within, but am not willing to risk any of my men.",
-        "Who knows what the Empire has been doing there?"], false);
-        talker.direction = 0;
+        "I will tell you a secret. The Princess Mary, our beloved god-empress, has disappeared, and taken Nicole with her.",
+        "I have caused this incident to distract my cult, but I worry now if I have done the right thing.",
+        "Take this crystal, and with it, my hope."], false);
+        talker.say = function() {
+            Game.textBox(this.text);
+            if (Game.crystals == 2) 
+            {
+                Game.crystals++;
+                this.text = ["Hurry, young cat-eared one."];
+                this.lag = 3;
+            }
+        }
+        talker.lag = 0;
+        talker.__update = talker.update;
+        talker.update = function() {
+            this.__update();
+            if (this.lag > 0) {
+                this.lag--;
+                if (this.lag == 0)
+                    PlaySound("crystal");
+            }
+        } 
+        talker.direction = 1;
         Game.objects.push(talker);
     } else if (invar[0] == 219) {
         var talker2 = getTalker(invar, 2, ["Miranda is incredibly wise!"], false);
@@ -102,6 +117,14 @@ var Arbitrary = function(invar) {
         var talker = getTalker(invar, 2, ["This town was probably once a nice place to have a vacation!"], false);
         talker.direction = 2;
         Game.objects.push(talker);
+    } else if (invar[0] == 223) {
+        Game.blocks.push(getDoor(invar, function() { 
+            if (Game.crystals < 3) {
+                Game.textBox(["Another door...", "Perhaps I should explore the town a bit more."]);
+            } else {
+                this.open();
+            }
+        }));
     }
 }
 
@@ -267,8 +290,9 @@ var getTalker = function(invar, row, text, disappear) {
         if (this.disappear) {
             this.invar[3] = false;
         }
-        Game.textBox(this.text); 
+        this.say();
     };
+    talker.say = function() { Game.textBox(this.text); };
     return talker;
 }
 
@@ -331,8 +355,10 @@ var getCrystal = function(invar) {
             this.drawCount++;
             if (this.drawCount == 4) this.drawCount = 0;
             this.lag = 15;
-            if (this.invar[3] == false)
+            if (this.invar[3] == false) {
+                PlaySound("crystal");
                 this.active = false;
+            }
         }
         else
             this.lag--;
