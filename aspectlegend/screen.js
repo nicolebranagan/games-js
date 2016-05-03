@@ -64,7 +64,7 @@ var LogoScreen = {
             PlaySound("whistle");
         if (Controls.Enter) {
             Controls.Enter = false;
-            runner = new TitleScreen();
+            runner = new TextScreen(openingText, function() {runner = new TitleScreen()}, true);
         };
     },
     sprite: {
@@ -91,20 +91,29 @@ var LogoScreen = {
     }
 };
 
-var TextScreen = function(text) {
+var TextScreen = function(text, run, can_skip) {
     this.text = text;
+    this.run = run;
+    this.can_skip = can_skip;
 };
 
 TextScreen.prototype = {
     timer: 0,
     draw: function(ctx) {
-        cycles = Math.floor(this.timer / 4) - (144 / 2);
+        var cycles = Math.floor(this.timer / 4) - (144);
         for (var i = 0; i < this.text.length; i++) {
             drawCenteredText(ctx, i*16 - cycles, this.text[i]);
         }
     },
     update: function() {
         this.timer++;
+        if (this.can_skip && Controls.Enter) {
+            Controls.Enter = false;
+            this.run();
+        }
+        if (this.timer > (144*3 + (this.text.length) * 64)) {
+            this.run();
+        }
     },
 };
 
