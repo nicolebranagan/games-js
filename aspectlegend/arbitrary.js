@@ -79,6 +79,8 @@ var Arbitrary = function(invar) {
         talker.direction = 3;
         Game.objects.push(talker);
     } else if (invar[0] == 218) {
+        if (Game.crystals > 3)
+            return;
         var talker = getTalker(invar, 3, ["I am Miranda, leader of the cult of the god-empress.", 
         "You seem familiar to me.",
         "I will tell you a secret. The Princess Mary, our beloved god-empress, has disappeared, and taken Nicole with her.",
@@ -89,7 +91,6 @@ var Arbitrary = function(invar) {
             if (Game.crystals == 2) 
             {
                 Game.crystals++;
-                this.text = ["Hurry, young cat-eared one."];
                 this.lag = 3;
             }
         }
@@ -102,15 +103,21 @@ var Arbitrary = function(invar) {
                 if (this.lag == 0)
                     PlaySound("crystal");
             }
+            if (Game.crystals === 3)
+                this.text = ["Hurry, young cat-eared one.", "Perhaps you should examine the abandoned garrison to the south."];            
         } 
         talker.direction = 1;
         Game.objects.push(talker);
     } else if (invar[0] == 219) {
         var talker2 = getTalker(invar, 2, ["Miranda is incredibly wise!"], false);
+        if (Game.crystals > 3)
+            talker2.text = ["Miranda has disappeared.", "But she's so wise she probably had a good reason!"];
         talker2.direction = 2;
         Game.objects.push(talker2);
     } else if (invar[0] == 220) {
         var talker1 = getTalker(invar, 2, ["Miranda trusts you for some reason."], false);
+        if (Game.crystals > 3)
+            talker1.text = ["I wish we had chairs, but alas they are anathema."]
         talker1.direction = 3;
         Game.objects.push(talker1);
     } else if (invar[0] == 222) {
