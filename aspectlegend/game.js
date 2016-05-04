@@ -344,7 +344,7 @@ var Game = {
         var tile = Game.getTile(x, y)
         if (tile == 1)
             return true;
-        else if (tile == 5 && self instanceof Enemy)
+        else if (tile == 5 && !(self instanceof Player || self instanceof Projectile))
             return true;
         else if (tile == 8 && !(self instanceof Projectile))
             return true;
@@ -942,6 +942,12 @@ Block.prototype = {
     },
     
     move: function(dir) {
+        // Make sure the player only pushes the block they're aligned with
+        if (Math.floor(this.x/16) !== Math.floor(Game.player.x/16) && Math.floor(this.y/16) !== Math.floor(Game.player.y/16)) {
+            this.pushCount = 0
+            return;
+        }
+        
         var x = this.x;
         var y = this.y;
         var delx = 0;
@@ -955,7 +961,7 @@ Block.prototype = {
         else if (dir == 3)
             delx += 16;
         
-        if (!Game.isSolid(x + delx, y + dely, this) && (!Game.isSolid(x - delx, y - dely, this)) && (x >= 8 && y >= 8 && x <= 152 && y <= 120)) {
+        if (!Game.isSolid(x + delx, y + dely, this) && (!Game.isSolid(x - delx, y - dely, this)) && (x+delx >= 8 && y+delx >= 8 && x+delx <= 152 && y+dely <= 120)) {
             PlaySound("push");
             this.moveTimer = 16;
             this.dir = dir;
