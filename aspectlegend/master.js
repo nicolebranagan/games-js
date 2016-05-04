@@ -158,23 +158,28 @@ var PlaySound = function(sound) {
 
 // Play music
 
-var bgMusic = new Audio();
+var bgMusic;
 var currentSong = "";
-bgMusic.loop = true;
-bgMusic.volume = 0.5;
 var PlayMusic = function(sound) {
     if (currentSong === sound)
         return;
-    bgMusic.pause();
-    bgMusic.currentTime = 0;
     if (!sound) {
         currentSong = "";
+        if (bgMusic)
+            bgMusic.pause();
         // Stop music if there is no argument
         return;
     }
-    bgMusic.src = "./music/" + sound + ".ogg";
-    currentSong = sound;
+    if (bgMusic)
+        bgMusic.unload();
+    bgMusic = new Howl({
+        urls: ["./music/" + sound + ".ogg"],
+        volume: 0.6,
+        autoplay: true,
+        loop: true,
+    });
     bgMusic.play();
+    currentSong = sound;
 }
 var PauseMusic = function() {
     if (bgMusic.paused)
