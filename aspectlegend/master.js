@@ -172,7 +172,7 @@ var PlayMusic = function(sound) {
         // Stop music if there is no argument
         return;
     }
-    bgMusic.src = "./music/" + sound + ".mp3";
+    bgMusic.src = "./music/" + sound + ".ogg";
     currentSong = sound;
     bgMusic.play();
 }
