@@ -159,6 +159,7 @@ var PlaySound = function(sound) {
 // Play music
 
 var bgMusic;
+//var bgMusic.paused = false;
 var currentSong = "";
 var PlayMusic = function(sound) {
     if (currentSong === sound)
@@ -178,14 +179,18 @@ var PlayMusic = function(sound) {
         autoplay: true,
         loop: true,
     });
-    bgMusic.play();
+    bgMusic.paused = false;
     currentSong = sound;
 }
+
 var PauseMusic = function() {
-    if (bgMusic.paused)
+    if (bgMusic.paused) {
+        bgMusic.paused = false
         bgMusic.play();
-    else
+    } else {
         bgMusic.pause();
+        bgMusic.paused = true;
+    }
 }
 
 Loop();
