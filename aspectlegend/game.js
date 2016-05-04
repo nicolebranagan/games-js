@@ -13,7 +13,7 @@ var Game = {
     area: 0,
     crystals: 0,
     flipped: false,
-    music: ["mystery","cave","frenzy","under","right","cave",,,,,],
+    music: ["mystery","cave","frenzy","under","right","march",,,,,],
     
     activate: function(newgame) {
         PlaySound("aspect");
