@@ -58,7 +58,7 @@ var LogoScreen = {
         this.sprite.update();
         this.timer++;
         if (this.timer > 320) {
-            runner = new TitleScreen();
+            runner = new TextScreen(openingText, function() {runner = new TitleScreen()}, true);
         }
         if (this.timer == 110 || this.timer == 186)
             PlaySound("whistle");
@@ -100,7 +100,7 @@ var TextScreen = function(text, run, can_skip) {
 TextScreen.prototype = {
     timer: 0,
     draw: function(ctx) {
-        var cycles = Math.floor(this.timer / 4) - (144);
+        var cycles = Math.floor(this.timer / 6) - (144);
         for (var i = 0; i < this.text.length; i++) {
             drawCenteredText(ctx, i*16 - cycles, this.text[i]);
         }
@@ -111,7 +111,7 @@ TextScreen.prototype = {
             Controls.Enter = false;
             this.run();
         }
-        if (this.timer > (144*3 + (this.text.length) * 64)) {
+        if (this.timer > (144*3 + (this.text.length) * 128)) {
             this.run();
         }
     },

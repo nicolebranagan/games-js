@@ -132,6 +132,10 @@ var Arbitrary = function(invar) {
                 this.open();
             }
         }));
+    } else if (invar[0] == 224) {
+        var runner = getRunner(invar, 1, ["\"Meow!\"", "[We don't have much time!]", "I'm still not sure who I am, but I desperately hope I'm not the type of person who talks to cats."], 3);
+        runner.direction = 2;
+        Game.objects.push(runner);
     }
 }
 
