@@ -152,6 +152,21 @@ var Arbitrary = function(invar) {
                 this.open();
             }
         }));
+    } else if (invar[0] == 227) {
+        var talker = getTalker(invar, 4, ["If I get on this broom, I could fly across the water...", "But I don't think I like water...", "I am a catgirl after all.", "Still, let's do it!"], false);
+        talker.talkLag = 0;
+        talker.___update = talker.update;
+        talker._say = talker.say;
+        talker.say = function() { talker._say(); talker.talkLag = 3;}
+        talker.update = function() {
+            this.___update();
+            if (this.talkLag != 0) {
+                this.talkLag--;
+                if (this.talkLag == 0)
+                    window.runner = new Subgame();
+            }
+        };
+        Game.objects.push(talker);
     }
 }
 
