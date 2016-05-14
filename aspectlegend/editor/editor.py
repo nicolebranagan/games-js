@@ -1,6 +1,7 @@
 import math
 import json
 import tkinter as tk
+import subprocess
 from tkinter import filedialog
 from PIL import ImageTk, Image
 from enum import Enum
@@ -117,6 +118,11 @@ class Application(tk.Frame):
         self.spinner.delete(0, "end")
         self.spinner.insert(0,0)
         self.spinner.grid(row=1, column=0)
+        imagebutton = tk.Button(
+            viewpanel, text="Update images", command=
+            lambda: subprocess.Popen(
+                ["python3", "process.py"], cwd="../images/process/"))
+        imagebutton.grid(row=1, column=1)
 
         self.objectview = []
 
