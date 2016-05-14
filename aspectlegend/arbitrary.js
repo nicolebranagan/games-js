@@ -136,6 +136,22 @@ var Arbitrary = function(invar) {
         var runner = getRunner(invar, 1, ["\"Meow!\"", "[We don't have much time!]", "I'm still not sure who I am, but I desperately hope I'm not the type of person who talks to cats."], 3);
         runner.direction = 2;
         Game.objects.push(runner);
+    } else if (invar[0] == 225) {
+       var crys = getCrystal(invar);
+        crys.collide = function() {
+            if (this.invar[3]) {
+                this._collide();
+            }
+        }
+        Game.blocks.push(crys);
+    } else if (invar[0] == 226) {
+        Game.blocks.push(getDoor(invar, function() { 
+            if (Game.crystals < 5) {
+                Game.textBox(["Seriously, who keeps putting these doors here?", "Looks like I'll need five crystals this time."]);
+            } else {
+                this.open();
+            }
+        }));
     }
 }
 
@@ -362,6 +378,8 @@ var getCrystal = function(invar) {
         ctx.drawImage(Game.objectimage, 10 * 16, (2+this.drawCount) * 16, 16, 16, this.x - 8, this.y - 8, 16, 16);
     }
     crystal.update = function() {
+        if (!this.active)
+            return;
         if (this.lag == 0) {
             this.drawCount++;
             if (this.drawCount == 4) this.drawCount = 0;

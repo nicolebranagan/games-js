@@ -93,6 +93,7 @@ class Application(tk.Frame):
                 0,0,anchor=tk.NW,image=self.tilesTk)
         self.tilecanvas.grid(row=0, column=0, columnspan=4, sticky=tk.W+tk.E)
         self.tilecanvas.bind("<Button-1>", self.tileclick)
+        self.tilecanvas.bind("<Motion>", self.tilemove)
         scrolltilecanvas.config(command=self.tilecanvas.xview)
 
         self.gridcanvas = tk.Canvas(self, width=320, height=320)
@@ -238,6 +239,12 @@ class Application(tk.Frame):
         #y = math.floor(self.tilecanvas.canvasy(event.y) / 32)
 
         self.select = x
+        
+    def tilemove(self, event):
+        clickX = math.floor(self.tilecanvas.canvasx(event.x) / 32)
+        
+        self.statusbar.config(
+                text="Tile #{}".format(clickX))
 
     def viewclick(self, event):
         clickX = math.floor(self.viewcanvas.canvasx(event.x) / 32)
