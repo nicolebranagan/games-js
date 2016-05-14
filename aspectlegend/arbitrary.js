@@ -257,15 +257,15 @@ wideDoor.prototype = {
     
     draw: function(ctx) {
         if (this.horz) {
-            ctx.drawImage(Game.bgimage, 3*16, 0, 8, 16, this.x - 8 - (16 - this.splitTimer), this.y - 8, 8, 16)
-            ctx.drawImage(Game.bgimage, 15*16, 0, 8, 16, this.x - (16 - this.splitTimer), this.y - 8, 8, 16)
-            ctx.drawImage(Game.bgimage, 15*16 + 8, 0, 8, 16, this.x + 8 + (16 - this.splitTimer), this.y - 8, 8, 16)
-            ctx.drawImage(Game.bgimage, 3*16 + 8, 0, 8, 16, this.x + 16 + (16 - this.splitTimer), this.y - 8, 8, 16)
+            ctx.drawImage(gfx.blocks, 3*16, 0, 8, 16, this.x - 8 - (16 - this.splitTimer), this.y - 8, 8, 16)
+            ctx.drawImage(gfx.blocks, 15*16, 0, 8, 16, this.x - (16 - this.splitTimer), this.y - 8, 8, 16)
+            ctx.drawImage(gfx.blocks, 15*16 + 8, 0, 8, 16, this.x + 8 + (16 - this.splitTimer), this.y - 8, 8, 16)
+            ctx.drawImage(gfx.blocks, 3*16 + 8, 0, 8, 16, this.x + 16 + (16 - this.splitTimer), this.y - 8, 8, 16)
         } else {
-            ctx.drawImage(Game.bgimage, 3*16, 0, 16, 8, this.x - 8, this.y - 8 - (16 - this.splitTimer), 16, 8)
-            ctx.drawImage(Game.bgimage, 15*16, 0, 16, 8, this.x - 8, this.y - (16 - this.splitTimer), 16, 8)
-            ctx.drawImage(Game.bgimage, 15*16, 8, 16, 8, this.x - 8, this.y + 8 + (16 - this.splitTimer), 16, 8)
-            ctx.drawImage(Game.bgimage, 3*16, 8, 16, 8, this.x - 8, this.y + 16 + (16 - this.splitTimer), 16, 8)
+            ctx.drawImage(gfx.blocks, 3*16, 0, 16, 8, this.x - 8, this.y - 8 - (16 - this.splitTimer), 16, 8)
+            ctx.drawImage(gfx.blocks, 15*16, 0, 16, 8, this.x - 8, this.y - (16 - this.splitTimer), 16, 8)
+            ctx.drawImage(gfx.blocks, 15*16, 8, 16, 8, this.x - 8, this.y + 8 + (16 - this.splitTimer), 16, 8)
+            ctx.drawImage(gfx.blocks, 3*16, 8, 16, 8, this.x - 8, this.y + 16 + (16 - this.splitTimer), 16, 8)
         }
     },
     
@@ -390,7 +390,7 @@ var getCrystal = function(invar) {
     var crystal = new Block(invar);
     crystal.drawCount = 0;
     crystal.draw = function(ctx) {
-        ctx.drawImage(Game.objectimage, 10 * 16, (2+this.drawCount) * 16, 16, 16, this.x - 8, this.y - 8, 16, 16);
+        ctx.drawImage(gfx.objects, 10 * 16, (2+this.drawCount) * 16, 16, 16, this.x - 8, this.y - 8, 16, 16);
     }
     crystal.update = function() {
         if (!this.active)
@@ -425,7 +425,7 @@ var getDoor = function(invar, onhit) {
     var door = new Block(invar);
     door.drawCount = 0;
     door.draw = function(ctx) {
-        ctx.drawImage(Game.objectimage, 8 * 16, (2+this.drawCount) * 16, 32, 16, this.x - 16, this.y - 8, 32, 16);
+        ctx.drawImage(gfx.objects, 8 * 16, (2+this.drawCount) * 16, 32, 16, this.x - 16, this.y - 8, 32, 16);
     }
     door.lag = -1;
     door.update = function() {

@@ -31,7 +31,7 @@ Subgame.prototype = {
         var i = 0;
         for (var y = -1; y < 8; y++) {
             for (var x = 0; x < 10; x++) {
-                ctx.drawImage(Game.bgimage, 16 * water, 0, 16, 16, x * 16, y * 16 + offset, 16, 16);
+                ctx.drawImage(gfx.tiles, 16 * water, 0, 16, 16, x * 16, y * 16 + offset, 16, 16);
                 i++;
             }
         };
@@ -55,7 +55,7 @@ Subgame.prototype = {
         drawNumber(ctx, 9*8, 144-8, this.stage, 1);
         drawNumber(ctx, 16*8, 144-8, Game.crystals, 2);
         // draw keys, crystals
-        ctx.drawImage(Game.objectimage, 12 * 16, 0, 16, 16, 13*8, 144-16, 16, 16);
+        ctx.drawImage(gfx.objects, 12 * 16, 0, 16, 16, 13*8, 144-16, 16, 16);
     },
     
     player: {
@@ -83,7 +83,7 @@ Subgame.prototype = {
         },
         
         draw: function(ctx) {
-            ctx.drawImage(Game.objectimage, 16 * 11, 2 * 16, 16, 32, this.x - 8, this.y, 16, 32);
+            ctx.drawImage(gfx.objects, 16 * 11, 2 * 16, 16, 32, this.x - 8, this.y, 16, 32);
         }
     },
 }
@@ -110,6 +110,6 @@ SubgameProjectile.prototype = {
     },
     
     draw: function(ctx) {
-        ctx.drawImage(Game.objectimage, 152 + 8 * this.aspect, 0, 8, 8, this.x - 4, this.y - 4, 8, 8)
+        ctx.drawImage(gfx.objects, 152 + 8 * this.aspect, 0, 8, 8, this.x - 4, this.y - 4, 8, 8)
     }
 }

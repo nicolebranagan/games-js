@@ -36,7 +36,7 @@ TitleScreen.prototype = {
     },
     
     draw: function(ctx) {
-        ctx.drawImage(Titleimage, 0, 0);
+        ctx.drawImage(gfx.title, 0, 0);
         drawText(ctx, 8*8, 10*8, "New Game");
         drawText(ctx, 8*8, 12*8, "Continue");
         drawText(ctx, 8*8, 14*8, "Options");
@@ -165,7 +165,7 @@ FlipScreen.prototype = {
        var i = 0;
         for (var y = 0; y < 8; y++) {
             for (var x = 0; x < 10; x++) {
-                ctx.drawImage(Game.bgimage, 16 * room[i], 0, 16, 16, x * 16 + offsetx, y * 16 + offsety, 16, 16);
+                ctx.drawImage(gfx.tiles, 16 * room[i], 0, 16, 16, x * 16 + offsetx, y * 16 + offsety, 16, 16);
                 i++;
             }
         };
@@ -215,21 +215,36 @@ OptionsScreen.prototype = {
                 soundEnabled = !soundEnabled;
             } else if (this.selection == 3) {
                 // Change palette
+                gfx.adapt(this.currentpalette);
             } else if (this.selection == 4) {
                 // Sound test
-                PlayMusic(this.music[this.currentmusic]);
+                PlayMusic(this.
+                music[this.currentmusic]);
             } else if (this.selection == 5) {
                 // Return to title screen
                 runner = new TitleScreen();
             }
         } else if (Controls.Up) {
-            if (this.selection != 0)
+            if (
+                this.selection != 0)
                 this.selection--;
             Controls.Up = false;
         }   else if (Controls.Down) {
             if (this.selection != 5)
                 this.selection++;
             Controls.Down = false;
+        }
+        
+        if (this.selection == 3) {
+            if (Controls.Left) {
+                Controls.Left = false;
+                if (this.currentpalette != 0)
+                    this.currentpalette--;
+            } else if (Controls.Right) {
+                Controls.Right = false;
+                if (this.currentpalette != (gfx.backgrounds.length - 1))
+                    this.currentpalette++;
+            }
         }
         
         if (this.selection == 4) {

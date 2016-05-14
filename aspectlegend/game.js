@@ -18,12 +18,6 @@ var Game = {
     activate: function(newgame) {
         PlaySound("aspect");
 
-        this.objectimage = new Image();
-        this.objectimage.src = "./images/objects.png"
-        
-        this.bgimage = new Image();
-        this.bgimage.src = "./images/train_map.png";
-
         this.reset(newgame);
         runner = this;
     },
@@ -290,7 +284,7 @@ var Game = {
         var i = 0;
         for (var y = 0; y < 8; y++) {
             for (var x = 0; x < 10; x++) {
-                ctx.drawImage(this.bgimage, 16 * this.tileMap[i], 0, 16, 16, x * 16, y * 16, 16, 16);
+                ctx.drawImage(gfx.tiles, 16 * this.tileMap[i], 0, 16, 16, x * 16, y * 16, 16, 16);
                 i++;
             }
         }
@@ -311,8 +305,8 @@ var Game = {
         drawNumber(ctx, 9*8, 144-8, this.keys, 2);
         drawNumber(ctx, 16*8, 144-8, this.crystals, 2);
         // draw keys, crystals
-        ctx.drawImage(Game.objectimage, 11 * 16, 0, 16, 16, 6*8, 144-16, 16, 16);
-        ctx.drawImage(Game.objectimage, 12 * 16, 0, 16, 16, 13*8, 144-16, 16, 16);
+        ctx.drawImage(gfx.objects, 11 * 16, 0, 16, 16, 6*8, 144-16, 16, 16);
+        ctx.drawImage(gfx.objects, 12 * 16, 0, 16, 16, 13*8, 144-16, 16, 16);
     },
 
     textBox: function(text) {
@@ -404,13 +398,13 @@ GameObject.prototype = {
 
     draw: function(ctx) {
         // Slice image
-        ctx.drawImage(Game.objectimage, 16 * (2 * this.direction + this.currentFrame + this.offset), this.row * 16, 16, 16, this.x - 8, this.y - 8, 16, 16);
+        ctx.drawImage(gfx.objects, 16 * (2 * this.direction + this.currentFrame + this.offset), this.row * 16, 16, 16, this.x - 8, this.y - 8, 16, 16);
         this.drawAspect(ctx);
     },
     
     drawAspect: function(ctx) {
         if (this.aspect != -1 && Game.area != 0 && Game.area != 2)
-            ctx.drawImage(Game.objectimage, 128 + 8 * this.aspect, 0, 8, 8, this.x - 4, this.y - 16, 8, 8)
+            ctx.drawImage(gfx.objects, 128 + 8 * this.aspect, 0, 8, 8, this.x - 4, this.y - 16, 8, 8)
     },
     
     animate: false,
@@ -511,7 +505,7 @@ function Player() {
                 this.currentFrame = (this.currentFrame + 1) % 2;
             }
             
-            ctx.drawImage(Game.objectimage, (14 + this.currentFrame)*16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
+            ctx.drawImage(gfx.objects, (14 + this.currentFrame)*16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
             this.drawAspect(ctx);
         }
     };
@@ -715,7 +709,7 @@ function Projectile(x, y, dir, aspect) {
 
 Projectile.prototype = {
     draw: function(ctx) {
-        ctx.drawImage(Game.objectimage, 152 + 8 * this.aspect, 0, 8, 8, this.x - 4, this.y - 4, 8, 8)
+        ctx.drawImage(gfx.objects, 152 + 8 * this.aspect, 0, 8, 8, this.x - 4, this.y - 4, 8, 8)
     },
     
     update: function() {
@@ -782,7 +776,7 @@ function Explosion(x, y) {
 
 Explosion.prototype = {
     draw: function(ctx) {
-        ctx.drawImage(Game.objectimage, 128 + 16 * this.frame, 16, 16, 16, this.x - 8, this.y - 8, 16, 16)
+        ctx.drawImage(gfx.objects, 128 + 16 * this.frame, 16, 16, 16, this.x - 8, this.y - 8, 16, 16)
     },
     
     update: function() {
@@ -857,7 +851,7 @@ function Block(invar) {
         }
     } else if (this.type == 107) {
         this.draw = function(ctx) {
-            ctx.drawImage(Game.bgimage, (7 - (Game.flipped ? 1 : 0)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
+            ctx.drawImage(gfx.blocks, (7 - (Game.flipped ? 1 : 0)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
         }
         this.collide = function() { return this.contact(Game.player); }
         this.lastTouch = null;
@@ -881,7 +875,7 @@ function Block(invar) {
         }
     } else if (this.type == 108) {
         this.draw = function(ctx) {
-            ctx.drawImage(Game.bgimage, (3 + (Game.flipped ? 5 : 0)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
+            ctx.drawImage(gfx.blocks, (3 + (Game.flipped ? 5 : 0)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
         }
         this.collide = function() { return this.contact(Game.player); }
         this.contact = function(caller) { 
@@ -889,7 +883,7 @@ function Block(invar) {
         }
     } else if (this.type == 109) {
         this.draw = function(ctx) {
-            ctx.drawImage(Game.bgimage, (3 + (Game.flipped ? 0 : 5)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
+            ctx.drawImage(gfx.blocks, (3 + (Game.flipped ? 0 : 5)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
         }
         this.collide = function() { return this.contact(Game.player); }
         this.contact = function(caller) { 
@@ -901,10 +895,10 @@ function Block(invar) {
 Block.prototype = {
     draw: function(ctx) {
         if (this.splitTimer != 0) {
-            ctx.drawImage(Game.bgimage, (9+(this.type-100)) * 16, 0, 8, 16, this.x - 8 - (8-this.splitTimer), this.y - 8, 8, 16)
-            ctx.drawImage(Game.bgimage, (9+(this.type-100)) * 16 + 8, 0, 8, 16, this.x + (8-this.splitTimer), this.y - 8, 8, 16)
+            ctx.drawImage(gfx.blocks, (9+(this.type-100)) * 16, 0, 8, 16, this.x - 8 - (8-this.splitTimer), this.y - 8, 8, 16)
+            ctx.drawImage(gfx.blocks, (9+(this.type-100)) * 16 + 8, 0, 8, 16, this.x + (8-this.splitTimer), this.y - 8, 8, 16)
         } else
-            ctx.drawImage(Game.bgimage, (9 + (this.type-100)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
+            ctx.drawImage(gfx.blocks, (9 + (this.type-100)) * 16, 0, 16, 16, this.x - 8, this.y - 8, 16, 16);
     },
     
     moveTimer: 0,
