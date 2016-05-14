@@ -22,11 +22,7 @@ TitleScreen.prototype = {
                     Game.activate(false);
                 }
             } else if (this.selection == 2) {
-                /*__debug = true;
-                var saved = localStorage.getItem('saved');
-                Game.snapshot = JSON.parse(saved);
-                Game.activate(false);*/
-                runner = new Subgame();
+                runner = new OptionsScreen();
             }
         } else if (Controls.Up) {
             if (this.selection != 0)
@@ -43,7 +39,7 @@ TitleScreen.prototype = {
         ctx.drawImage(Titleimage, 0, 0);
         drawText(ctx, 8*8, 10*8, "New Game");
         drawText(ctx, 8*8, 12*8, "Continue");
-        drawText(ctx, 8*8, 14*8, "Debug Load");
+        drawText(ctx, 8*8, 14*8, "Options");
         drawText(ctx, 6*8, (10 + (this.selection*2))*8, [26]);
         drawText(ctx, 2*8, 16*8, "(c) 2016 Nicole");
     },
@@ -173,5 +169,79 @@ FlipScreen.prototype = {
                 i++;
             }
         };
+    },
+}
+
+var OptionsScreen = function() {
+    this.music = ["title"].concat(Game.music);
+    PlayMusic("");
+}
+
+OptionsScreen.prototype = {
+    selection: 5,
+    currentmusic: 0,
+    currentpalette: 0,
+    locations: [4*8, 6*8, 8*8, 11*8, 13*8, 16*8],
+    
+    draw: function(ctx) {
+        drawCenteredText(ctx, 1*8, "Aspect Legend");
+        drawCenteredText(ctx, 2*8, "Options");
+        
+        drawText(ctx, 3*8, 4*8, saveEnabled ? "Save game" : "Do not save game")
+        drawText(ctx, 3*8, 6*8, musicEnabled ? "Music enabled" : "Music disabled");
+        drawText(ctx, 3*8, 8*8, soundEnabled ? "Sound enabled" : "Sound disabled");
+        drawText(ctx, 3*8, 11*8, "Palette " + this.currentpalette.toString());
+        drawText(ctx, 3*8, 13*8, "Sound test");
+        drawText(ctx, 5*8, 14*8, this.music[this.currentmusic]);
+        
+        drawText(ctx, 3*8, 16*8, "Return")
+        
+        drawText(ctx, 1*8, this.locations[this.selection], [26]);
+    },
+    
+    update: function() {
+        if (Controls.Enter || Controls.Shoot) {
+            Controls.Enter = false;
+            Controls.Shoot = false;
+            if (this.selection == 0) {
+                // Disable saving
+                saveEnabled = !saveEnabled;
+            } else if (this.selection == 1) {
+                // Disable music
+                PlayMusic("");
+                musicEnabled = !musicEnabled;
+            } else if (this.selection == 2) {
+                // Disable sound
+                soundEnabled = !soundEnabled;
+            } else if (this.selection == 3) {
+                // Change palette
+            } else if (this.selection == 4) {
+                // Sound test
+                PlayMusic(this.music[this.currentmusic]);
+            } else if (this.selection == 5) {
+                // Return to title screen
+                runner = new TitleScreen();
+            }
+        } else if (Controls.Up) {
+            if (this.selection != 0)
+                this.selection--;
+            Controls.Up = false;
+        }   else if (Controls.Down) {
+            if (this.selection != 5)
+                this.selection++;
+            Controls.Down = false;
+        }
+        
+        if (this.selection == 4) {
+            if (Controls.Left) {
+                Controls.Left = false;
+                if (this.currentmusic != 0)
+                    this.currentmusic--;
+            } else if (Controls.Right) {
+                Controls.Right = false;
+                if (this.currentmusic != (this.music.length - 1))
+                    this.currentmusic++;
+            }
+        }
     },
 }

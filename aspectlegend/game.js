@@ -102,7 +102,8 @@ var Game = {
                 this.snapshot.objects[i] = invar;
             }
         }
-        localStorage.setItem('saved', JSON.stringify(this.snapshot));
+        if (saveEnabled)
+            localStorage.setItem('saved', JSON.stringify(this.snapshot));
     },
 
     loadroom: function(x, y, skip) {

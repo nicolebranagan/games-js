@@ -149,9 +149,14 @@ function drawNumber(ctx, x, y, num, len) {
     drawText(ctx, x, y, chars);
 }
 
-// Play sound effects
+var saveEnabled = true;
+var musicEnabled = true;
+var soundEnabled = true;
 
+// Play sound effects
 var PlaySound = function(sound) {
+    if (!soundEnabled)
+        return;
     var snd = new Audio("./sound/" + sound + ".wav");
     snd.play();
 }
@@ -162,6 +167,8 @@ var bgMusic;
 //var bgMusic.paused = false;
 var currentSong = "";
 var PlayMusic = function(sound) {
+    if (!musicEnabled)
+        return;
     if (currentSong === sound)
         return;
     if (!sound) {
