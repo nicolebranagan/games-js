@@ -184,10 +184,12 @@ OptionsScreen.prototype = {
     locations: [4*8, 6*8, 8*8, 11*8, 13*8, 16*8],
     
     draw: function(ctx) {
+        ctx.drawImage(gfx.objects, 0, 0, 16, 16, 16, 16, 16, 16);
+        ctx.drawImage(gfx.blocks, 14*16, 0, 16, 16, 144 - 16, 16, 16, 16);
         drawCenteredText(ctx, 1*8, "Aspect Legend");
         drawCenteredText(ctx, 2*8, "Options");
         
-        drawText(ctx, 3*8, 4*8, saveEnabled ? "Save game" : "Do not save game")
+        drawText(ctx, 3*8, 4*8, saveEnabled ? "Do save game" : "Do not save game")
         drawText(ctx, 3*8, 6*8, musicEnabled ? "Music enabled" : "Music disabled");
         drawText(ctx, 3*8, 8*8, soundEnabled ? "Sound enabled" : "Sound disabled");
         drawText(ctx, 3*8, 11*8, "Palette " + this.currentpalette.toString());
