@@ -22,10 +22,11 @@ TitleScreen.prototype = {
                     Game.activate(false);
                 }
             } else if (this.selection == 2) {
-                __debug = true;
+                /*__debug = true;
                 var saved = localStorage.getItem('saved');
                 Game.snapshot = JSON.parse(saved);
-                Game.activate(false);
+                Game.activate(false);*/
+                runner = new Subgame();
             }
         } else if (Controls.Up) {
             if (this.selection != 0)

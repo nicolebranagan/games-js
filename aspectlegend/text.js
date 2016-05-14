@@ -8,15 +8,15 @@ var openingText = [
     "Princess Mary.",
     "",
     "Together with her",
-    "consort Nicole, she",
+    "partner Nicole, she",
     "created a new era",
     "of peace and",
     "prosperity.",
     "",
     "But any system",
     "built on a single",
-    "person has a",
-    "key flaw...",
+    "person is doomed",
+    "to failure...",
     ];
 
 var creditsText = [
