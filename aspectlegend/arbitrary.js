@@ -38,6 +38,8 @@ var Arbitrary = function(invar) {
         var talker = getTalker(invar, 2, ["The cult of the god-empress is trying to investigate matters here.", "Our leader has set up camp in the southern part of the town."], false);
         Game.objects.push(talker);
     } else if (invar[0] == 210) {
+        if (Game.crystals > 2)
+            return;
         var talker = getTalker(invar, 2, ["The bridge to the southern part of the town has collapsed!", "And I'm certainly not going to get my robe wet!"], false);
         talker.direction = 3;
         Game.objects.push(talker);
@@ -167,6 +169,13 @@ var Arbitrary = function(invar) {
             }
         };
         Game.objects.push(talker);
+    } else if (invar[0] == 228) {
+        // Build a bridge
+        if (Game.crystals > 2) {
+            Game.tileMap = Game.tileMap.slice(0);
+            Game.tileMap[10*6 + 4] = 23;
+            Game.tileMap[10*5 + 3] = 43;
+        }
     }
 }
 
