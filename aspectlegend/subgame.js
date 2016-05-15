@@ -14,6 +14,8 @@ Subgame.prototype = {
     
     objects: [],
     
+    deathCount: 0,
+    
     getStage: function(index) {
         this.stage = index;
         this.objects = [];
@@ -33,7 +35,13 @@ Subgame.prototype = {
     
     update: function() {
         this.timer++;
-        this.player.update();
+        if (this.deathCount > 0) {
+            this.deathCount--;
+            if (this.deathCount == 0)
+                this.dieFunc();
+        } else
+            this.player.update();
+            
         for (var i=0; i < this.objects.length; i++) {
             this.objects[i].update();
         }
@@ -62,7 +70,8 @@ Subgame.prototype = {
         };
         
         var drawable = this.objects.slice();
-        drawable.push(this.player);
+        if (this.deathCount === 0)
+            drawable.push(this.player);
         drawable.sort(function(a, b) {
         return parseFloat(a.y) - parseFloat(b.y);
         });
@@ -77,16 +86,26 @@ Subgame.prototype = {
         ctx.clearRect(0, gamecanvas.height-16, gamecanvas.width, 16);
         drawText(ctx, 0, 144-16, " AREA  STAGE   CRYS ");
         drawNumber(ctx, 2*8, 144-8, 7, 2);
-        drawText(ctx, 7*8, 144-8, (this.stage+1).toString() + "/" + (this.maxstages+1).toString(), 1);
+        drawText(ctx, 8*8, 144-8, (this.stage+1).toString() + "/" + (this.maxstages+1).toString(), 1);
         drawNumber(ctx, 16*8, 144-8, Game.crystals, 2);
         // draw keys, crystals
         ctx.drawImage(gfx.objects, 12 * 16, 0, 16, 16, 13*8, 144-16, 16, 16);
     },
     
     die: function() {
-        // TODO: Animation or sound or something
-        if (this.stage == 0)
+        if (this.deathCount > 0)
+            return;
+        this.objects.push(new Explosion(this.player.x, this.player.y));
+        this.deathCount = 100;
+        PlayMusic("");
+        PlaySound("die");
+    },
+    
+    dieFunc: function() {
+        if (this.stage == 0) {
+            Game.loadroom(Game.roomx, Game.roomy, true);
             runner = Game;
+        }
         else
             this.getStage(this.stage - 1);
     },

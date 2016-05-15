@@ -155,7 +155,7 @@ var Arbitrary = function(invar) {
             }
         }));
     } else if (invar[0] == 227) {
-        var talker = getTalker(invar, 4, ["If I get on this broom, I could fly across the water...", "But I don't think I like water...", "I am a catgirl after all.", "Still, let's do it!"], false);
+        var talker = getTalker(invar, 4, ["If I get on this broom, I could fly across the floodwaters...", "But I don't think I like water...", "I am a catgirl after all.", "Still, let's do it!"], false);
         talker.talkLag = 0;
         talker.___update = talker.update;
         talker._say = talker.say;
