@@ -155,19 +155,22 @@ var Arbitrary = function(invar) {
             }
         }));
     } else if (invar[0] == 227) {
-        var talker = getTalker(invar, 4, ["If I get on this broom, I could fly across the floodwaters...", "But I don't think I like water...", "I am a catgirl after all.", "Still, let's do it!"], false);
+        var talker = getTalker(invar, 4, ["A broomstick?"], false);
         talker.talkLag = 0;
         talker.___update = talker.update;
         talker._say = talker.say;
-        talker.say = function() { talker._say(); talker.talkLag = 3;}
+        talker.say = function() { talker._say(); if (Game.spoken_to) talker.talkLag = 3;}
         talker.update = function() {
             this.___update();
+            if (Game.spoken_to)
+                this.text = ["If I get on this broom, I could fly across the ocean to the palace...", "But I don't think I like water...", "I am a catgirl after all.", "[Stop wasting time and let's go!]"];
             if (this.talkLag != 0) {
                 this.talkLag--;
                 if (this.talkLag == 0)
                     window.runner = new Subgame();
             }
         };
+        talker.stallCountMax = 30;
         Game.objects.push(talker);
     } else if (invar[0] == 228) {
         // Build a bridge
@@ -176,6 +179,15 @@ var Arbitrary = function(invar) {
             Game.tileMap[10*6 + 4] = 23;
             Game.tileMap[10*5 + 3] = 43;
         }
+    } else if (invar[0] == 229) {
+        if (Game.spoken_to)
+            return;
+        Game.spoken_to = false;
+        var talker = getTalker(invar, 1, ["\"Meow!\"", "[There's no time to explain", "You need to get to the imperial palace, take me with you]", "...", "What else can I do? I guess I'm following the advice of a cat."], false);
+        talker._say = talker.say;
+        talker.direction = 0;
+        talker.say = function() {this._say(); Game.spoken_to = true; this.text = ["\"Meow!\""]};
+        Game.objects.push(talker);
     }
 }
 

@@ -4,15 +4,19 @@ var Subgame = function() {
     this.player.parent = this;
     this.playMusic();
     this.maxstages = SubgameStages.length - 1;
-    this.getStage(0);
+    //this.getStage(0);
 }
 
 Subgame.prototype = {
     timer: 0,
     
-    stage: 0,
+    stage: -1,
+    
+    lives: 3,
     
     objects: [],
+    
+    enemies: [],
     
     winCount: 0,
     
@@ -27,6 +31,7 @@ Subgame.prototype = {
         this.objects = [];
         this.tiles = 0;
         var stage = SubgameStages[index];
+        this.stagedata = stage;
         this.enemies = stage.enemies.slice(0);
         for (var i = 0; i < stage.tilemap.length; i++) {
             var check = stage.tilemap[i];
@@ -43,6 +48,12 @@ Subgame.prototype = {
     
     update: function() {
         this.timer++;
+        if (this.stage == -1 && this.timer > 100)
+            this.getStage(0);
+        else if (this.stage > -1) {
+            if (this.timer > this.stagedata.loop_point)
+                this.timer = this.timer % 16;
+        }
         if (this.deathCount > 0) {
             this.deathCount--;
             if (this.deathCount == 0)
@@ -99,12 +110,12 @@ Subgame.prototype = {
     
     drawUI: function(ctx) {
         ctx.clearRect(0, gamecanvas.height-16, gamecanvas.width, 16);
-        drawText(ctx, 0, 144-16, " AREA  STAGE   CRYS ");
+        drawText(ctx, 0, 144-16, " AREA  STAGE   LIFE ");
         drawNumber(ctx, 2*8, 144-8, 7, 2);
-        drawText(ctx, 8*8, 144-8, (this.stage+1).toString() + "/" + (this.maxstages+1).toString(), 1);
-        drawNumber(ctx, 16*8, 144-8, Game.crystals, 2);
-        // draw keys, crystals
-        ctx.drawImage(gfx.objects, 12 * 16, 0, 16, 16, 13*8, 144-16, 16, 16);
+        drawText(ctx, 8*8, 144-8, ((this.stage == -1 ? 1 : this.stage+1).toString()) + "/" + (this.maxstages+1).toString(), 1);
+        drawNumber(ctx, 16*8, 144-8, this.lives, 2);
+        // draw self
+        ctx.drawImage(gfx.objects, (this.lives % 2 * 16), 0, 16, 16, 13*8, 144-16, 16, 16);
     },
     
     win: function() {
@@ -131,12 +142,13 @@ Subgame.prototype = {
     },
     
     dieFunc: function() {
-        if (this.stage == 0) {
+        if (this.lives == 1) {
             Game.loadroom(Game.roomx, Game.roomy, true);
             runner = Game;
         }
         else {
-            this.getStage(this.stage - 1);
+            this.lives--;
+            this.getStage(this.stage);
             this.playMusic();
         }
     },
@@ -155,6 +167,7 @@ Subgame.prototype = {
             
             if (Controls.Shoot) {
                 Controls.Shoot = false;
+                PlaySound("pew");
                 this.parent.objects.push(new SubgameProjectile(this.parent, true, this.x, this.y));
             }
             
@@ -173,11 +186,8 @@ Subgame.prototype = {
     enemyGovernor: function() {
         for (var i = 0; i < this.enemies.length; i++) {
             var enem = this.enemies[i];
-            if (enem === 0)
-                continue;
-            if (!(enem.active) && enem.time <= this.timer) {
+            if (enem.time == this.timer) {
                 this.objects.push(new SubgameEnemy(this, enem.x, enem.type, enem.freq));
-                this.enemies[i] = 0;
             }
         }
     }
@@ -343,7 +353,9 @@ var SubgameStages = [
                 x: 80,
                 freq: 128,
             },
-        ]
+        ],
+        
+        loop_point: 4000
 
     },
     {
@@ -376,24 +388,27 @@ var SubgameStages = [
                 x: 0,
                 freq: 128,
             },
-            {
-                time: 800,
-                type: 0,
-                x: 160,
-                freq: 128,
-            },
-            {
-                time: 850,
-                type: 0,
-                x: 160,
-                freq: 164,
-            },
+            
             {
                 time: 900,
                 type: 0,
                 x: 160,
                 freq: 128,
             },
-        ]
+            {
+                time: 950,
+                type: 0,
+                x: 160,
+                freq: 164,
+            },
+            {
+                time: 1000,
+                type: 0,
+                x: 160,
+                freq: 128,
+            },
+        ],
+        
+        loop_point: 1500,
     },
 ]
