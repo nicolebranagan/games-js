@@ -1,6 +1,6 @@
    //01234567890123456789
 var openingText = [
-    "For many years,",
+    "For many eons,",
     "the Empire has",
     "flourished under",
     "the leadership of",
@@ -13,14 +13,14 @@ var openingText = [
     "of peace and",
     "prosperity.",
     "",
-    "But any system",
-    "built on a single",
-    "person is doomed",
-    "to failure...",
+    "But like all",
+    "good things,",
+    "this too must come", 
+    "to an end..."
     ];
 
 var creditsText = [
-    "Aspect Star 3",
+    "Aspect Star III",
     "Credits",
     "",
     "",
@@ -47,9 +47,12 @@ var creditsText = [
     "",
     "",
     "SPECIAL THANKS TO",
-    "Marion",
+    "howler.js",
+    "DefleMask",
     "Aspect Star 1 Team",
     "Aspect Star 2 Team",
+    "and of course,",
+    "Marion",
     "",
     "",
     "",
