@@ -2,7 +2,7 @@
 
 var Subgame = function() {
     this.player.parent = this;
-    PlayMusic("spiral");
+    this.playMusic();
     this.maxstages = SubgameStages.length - 1;
     this.getStage(0);
 }
@@ -14,13 +14,20 @@ Subgame.prototype = {
     
     objects: [],
     
+    winCount: 0,
+    
     deathCount: 0,
+    
+    playMusic: function() {
+        PlayMusic("spiral");
+    },
     
     getStage: function(index) {
         this.stage = index;
         this.objects = [];
         this.tiles = 0;
         var stage = SubgameStages[index];
+        this.enemies = stage.enemies.slice(0);
         for (var i = 0; i < stage.tilemap.length; i++) {
             var check = stage.tilemap[i];
             var x = i % 10;
@@ -31,6 +38,7 @@ Subgame.prototype = {
             this.objects.push(new SubgameTile(x * 16 + 4, y * 8 + 8, check - 1))
             this.tiles++;
         }
+        this.timer = this.timer % 16;
     },
     
     update: function() {
@@ -41,6 +49,13 @@ Subgame.prototype = {
                 this.dieFunc();
         } else
             this.player.update();
+            
+        if (this.winCount > 0) {
+            this.winCount--;
+            if (this.winCount == 0)
+                this.winFunc();
+        } else
+            this.enemyGovernor();
             
         for (var i=0; i < this.objects.length; i++) {
             this.objects[i].update();
@@ -54,7 +69,7 @@ Subgame.prototype = {
         }, this);
         
         if (this.tiles == 0) {
-            // get next stage
+            this.win();
         }
     },
     
@@ -92,6 +107,20 @@ Subgame.prototype = {
         ctx.drawImage(gfx.objects, 12 * 16, 0, 16, 16, 13*8, 144-16, 16, 16);
     },
     
+    win: function() {
+        if (this.winCount > 0)
+            return;
+        this.winCount = 100;
+        this.tiles = 1;
+        // TODO: Sound effect    
+    },
+    
+    winFunc: function() {
+        if (this.stage != this.maxstages) {
+            this.getStage(this.stage + 1);
+        }
+    },
+    
     die: function() {
         if (this.deathCount > 0)
             return;
@@ -106,8 +135,10 @@ Subgame.prototype = {
             Game.loadroom(Game.roomx, Game.roomy, true);
             runner = Game;
         }
-        else
+        else {
             this.getStage(this.stage - 1);
+            this.playMusic();
+        }
     },
     
     player: {
@@ -135,10 +166,23 @@ Subgame.prototype = {
         },
         
         draw: function(ctx) {
-            ctx.drawImage(gfx.objects, 16 * 11, 2 * 16, 16, 32, this.x - 8, this.y, 16, 32);
+            ctx.drawImage(gfx.objects, 16 * 11, 2 * 16, 16, 24, this.x - 8, this.y, 16, 24);
         }
     },
-}
+    
+    enemyGovernor: function() {
+        for (var i = 0; i < this.enemies.length; i++) {
+            var enem = this.enemies[i];
+            if (enem === 0)
+                continue;
+            if (!(enem.active) && enem.time <= this.timer) {
+                this.objects.push(new SubgameEnemy(this, enem.x, enem.type, enem.freq));
+                this.enemies[i] = 0;
+            }
+        }
+    }
+};
+
 var SubgameProjectile = function(parent, up, x, y) {
     this.parent = parent;
     this.up = up;
@@ -163,25 +207,32 @@ SubgameProjectile.prototype = {
         else if (this.y < 0)
             this.up = false;
             
-        if (this.up) {
-            for (var i = 0; i < this.parent.objects.length; i++) {
-                var e = this.parent.objects[i];
-                if (e instanceof SubgameTile) {
-                    if (Math.abs(this.x - e.x) <= 8 && Math.abs(this.y - e.y) <= 4) {
-                        //this.active = false;
-                        this.up = !this.up;
-                        e.active = false;
-                        this.parent.tiles--;
-                        break;
-                    }
+        for (var i = 0; i < this.parent.objects.length; i++) {
+            var e = this.parent.objects[i];
+            if (this.up && e instanceof SubgameTile) {
+                if (Math.abs(this.x - e.x) <= 8 && Math.abs(this.y - e.y) <= 4) {
+                    //this.active = false;
+                    this.up = !this.up;
+                    e.active = false;
+                    this.parent.tiles--;
+                    break;
+                }
+            } else if (this.up && e instanceof SubgameEnemy) {
+                if (Math.abs(this.x - e.x) <= 8 && Math.abs(this.y - e.y) <= 4) {
+                    this.active = false;
+                    e.active = false;
+                    this.parent.objects.push(new Explosion(e.x, e.y));
+                    break;
                 }
             }
         }
         
         if (this.y > 90 && !this.up) {
             if (Math.abs(this.x - this.parent.player.x) < 4 && 
-                Math.abs(this.y - this.parent.player.y) < 4)
+                Math.abs(this.y - this.parent.player.y) < 4) {
+                this.active = false;
                 this.parent.die();
+            }
         }
     },
     
@@ -206,6 +257,62 @@ SubgameTile.prototype = {
     }
 }
 
+var SubgameEnemy = function(parent, x, type, freq) {
+    this.parent = parent;
+    this.x = x;
+    this.type = type;
+    this.frequency = freq;
+    this.timer = 0;
+    
+    if (this.timer == 0)
+        this.update = this.birdbrain;
+}
+
+SubgameEnemy.prototype = {
+    y: 0,
+    
+    ymax: 96,
+    
+    birdbrain: function() {
+        this.timer++;
+        if (this.y > this.ymax) {
+            this.y++;
+            if (this.y > (144 - 8))
+                this.active = false;
+            return;
+        }
+        if (this.timer % 4 == 0) {
+            this.y = this.y + 1;
+            if (this.x > this.parent.player.x)
+                this.move(-1);
+            else if (this.x < this.parent.player.x)
+                this.move(+1);
+        }
+        if (this.timer % 64 == 0) {
+            this.parent.objects.push(new SubgameProjectile(this.parent, false, this.x, this.y));
+        }
+    },
+    
+    draw: function(ctx) {
+        ctx.drawImage(gfx.objects, 12*16 + this.type*16, 2*16 + 8, 16, 16, this.x - 8, this.y - 8, 16, 16)
+    },
+    
+    move: function(delta) {
+        for (var i = 0; i < this.parent.objects.length; i++) {
+            var e = this.parent.objects[i];
+            if (e === this)
+                continue;
+            if (!(e instanceof SubgameEnemy))
+                continue;
+            if (Math.abs((this.x + delta) - e.x) <= 8 && Math.abs(this.y - e.y) <= 4) {
+                return false;
+            }
+        }
+        this.x = this.x + delta;
+        return true;
+    }
+}
+
 var SubgameStages = [
     {
         tilemap: [
@@ -214,7 +321,79 @@ var SubgameStages = [
             1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
             0, 1, 2, 1, 2, 1, 2, 1, 2, 0,
             1, 2, 1, 2, 1, 2, 1, 2, 1, 2,
+            0, 1, 2, 1, 2, 1, 2, 1, 2, 0,
+        ],
+        
+        enemies: [
+            {
+                time: 900,
+                type: 0,
+                x: 80,
+                freq: 128,
+            },
+            {
+                time: 2400,
+                type: 0,
+                x: 80,
+                freq: 128,
+            },
+            {
+                time: 3600,
+                type: 0,
+                x: 80,
+                freq: 128,
+            },
+        ]
+
+    },
+    {
+        tilemap: [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
+            0, 1, 2, 0, 1, 1, 0, 1, 2, 0,
+            0, 2, 0, 0, 0, 0, 0, 0, 1, 0,
+            0, 1, 2, 1, 0, 0, 2, 1, 2, 0,
+            0, 0, 0, 2, 0, 0, 1, 0, 0, 0,
+            0, 1, 0, 1, 0, 0, 2, 0, 2, 0,
+        ],
+        
+        enemies: [
+            {
+                time: 500,
+                type: 0,
+                x: 0,
+                freq: 128,
+            },
+            {
+                time: 550,
+                type: 0,
+                x: 0,
+                freq: 164,
+            },
+            {
+                time: 600,
+                type: 0,
+                x: 0,
+                freq: 128,
+            },
+            {
+                time: 800,
+                type: 0,
+                x: 160,
+                freq: 128,
+            },
+            {
+                time: 850,
+                type: 0,
+                x: 160,
+                freq: 164,
+            },
+            {
+                time: 900,
+                type: 0,
+                x: 160,
+                freq: 128,
+            },
         ]
     },
 ]
