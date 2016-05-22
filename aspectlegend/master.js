@@ -62,7 +62,14 @@ var Controls = {
             Controls.Enter = false;
         }
         if (event.keyCode == 9) {
-            var image = gamecanvas.toDataURL("image/png");
+            // Take screenshot
+            var offCanvas = document.createElement('canvas');
+            offCanvas.width = 160; offCanvas.height = 144;
+            var ctx = offCanvas.getContext("2d");
+            ctx.fillStyle = gamecanvas.style.backgroundColor;
+            ctx.fillRect(0, 0, 160, 144);
+            ctx.drawImage(gamecanvas, 0, 0);
+            var image = offCanvas.toDataURL("image/png");
             window.open(image, '_blank');
         }
     },
