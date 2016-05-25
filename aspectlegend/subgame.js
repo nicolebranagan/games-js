@@ -5,10 +5,15 @@ var Subgame = function() {
     this.playMusic();
     this.maxstages = SubgameStages.length - 1;
     this.objects = [];
-    //this.getStage(0);
+    
+    this.textBox = Game.textBox;
+    this.drawText = Game.drawText;
+    this.updateText = Game.updateText;
 }
 
 Subgame.prototype = {
+    mode: GameStage.RunMode,
+    
     timer: 0,
     
     stage: -1,
@@ -26,7 +31,10 @@ Subgame.prototype = {
     paused: false,
     
     playMusic: function() {
-        PlayMusic("spiral");
+        if (this.stage == 3)
+            PlayMusic("spiral");
+        else
+            PlayMusic("bold");
     },
     
     getStage: function(index) {
@@ -54,10 +62,20 @@ Subgame.prototype = {
             this.objects.push(new SubgameTile(x * 16 + 4, y * 8 + 8, check - 1))
             this.tiles++;
         }
+        if (this.stage === 3) {
+            // Final stage
+            this.objects.push(new SubgameBoss(this));
+        }
         this.timer = this.timer % 16;
+        this.playMusic();
     },
     
     update: function() {
+        if (this.mode == GameStage.TextMode) {
+            this.updateText();
+            return;
+        }
+        
         if (this.paused) {
             if (Controls.Enter) {
                 Controls.Enter = false;
@@ -131,6 +149,9 @@ Subgame.prototype = {
         }
         
         this.drawUI(ctx);
+        
+        if (this.mode == GameStage.TextMode)
+            this.drawText(ctx);
     },
     
     drawUI: function(ctx) {
@@ -384,6 +405,43 @@ SubgameEnemy.prototype = {
         }
         this.x = this.x + delta;
         return true;
+    }
+}
+
+var SubgameBoss = function(parent) {
+    this.parent = parent;
+    this.x = 80;
+    this.y = -16;
+}
+
+SubgameBoss.prototype = {
+    timer: 0,
+    
+    update: function() {
+        if (this.waveTimer > 0)
+            this.waveTimer--;
+        this.timer++;
+        
+        if (this.y < 16) {
+            if (this.timer % 4 == 0)
+                this.y++;
+            if (this.y == 16) {
+                this.parent.textBox(["Miranda: You've gone far enough, Nicole!", "\"Nicole? Who's that?\"", "Miranda: I'm not playing your games anymore!", "Those are real people, and I won't let you destroy them!"]);
+            }
+            return;
+        }
+        
+        
+    },
+    
+    draw: function(ctx) {
+        ctx.drawImage(gfx.objects, 16 * 11 + ((this.waveTimer > 0) ? 16 : 0), 3 * 16 + 8, 16, 24, this.x - 8, this.y - 8, 16, 24);
+    },
+    
+    waveTimer: 0,
+    
+    wave: function() {
+        this.waveTimer = 50;
     }
 }
 

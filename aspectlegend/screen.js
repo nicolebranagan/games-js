@@ -173,7 +173,7 @@ FlipScreen.prototype = {
 }
 
 var OptionsScreen = function() {
-    this.music = ["title"].concat(Game.music);
+    this.music = ["title"].concat(Game.music, ["spiral", "phasic"]);
     PlayMusic("");
 }
 

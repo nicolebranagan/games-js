@@ -13,7 +13,7 @@ var Game = {
     area: 0,
     crystals: 0,
     flipped: false,
-    music: ["mystery","cave","frenzy","under","right","march","firmly","spiral",,,],
+    music: ["mystery","cave","frenzy","under","right","march","firmly","bold","distance","chant"],
     
     activate: function(newgame) {
         PlaySound("aspect");
@@ -232,17 +232,21 @@ var Game = {
                 }
             }
         } else if (this.mode == GameStage.TextMode) {
-            if (this.lag > 0) {
-                this.lag = this.lag - 1;
-            } else {
-                if (Controls.Shoot) {
-                    this.step = this.step + 2;
-                    if (this.step >= this.displayText.length) {
-                        this.mode = GameStage.RunMode;
-                        this.lag = 20;
-                    }
-                    Controls.Shoot = false;
+            this.updateText();
+        }
+    },
+    
+    updateText: function() {
+        if (this.lag > 0) {
+            this.lag = this.lag - 1;
+        } else {
+            if (Controls.Shoot) {
+                this.step = this.step + 2;
+                if (this.step >= this.displayText.length) {
+                    this.mode = GameStage.RunMode;
+                    this.lag = 20;
                 }
+                Controls.Shoot = false;
             }
         }
     },
@@ -327,10 +331,10 @@ var Game = {
             if (newtext.length % 2 != 0)
                 newtext.push("");
         }
-        Game.displayText = newtext;
-        Game.step = 0;
-        Game.mode = GameStage.TextMode;
-        Game.lag = 20;
+        this.displayText = newtext;
+        this.step = 0;
+        this.mode = GameStage.TextMode;
+        this.lag = 20;
         Controls.Shoot = false;
     },
 
