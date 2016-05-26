@@ -11,7 +11,18 @@ function Loop() {
     ctx.clearRect(0, 0, gamecanvas.width, gamecanvas.height);
     runner.update();
     runner.draw(ctx);
+    if (__debug) {
+        drawText(ctx, 0, 0, Math.floor(checkFPS()).toString());
+    };
 };
+
+var lastTime = new Date;
+function checkFPS() { 
+    var thisTime = new Date;
+    var fps = 1000 / (thisTime - lastTime);
+    lastTime = thisTime;
+    return fps;
+}
 
 var Controls = {
     Up: false,
@@ -84,7 +95,7 @@ var Controls = {
             this.touchActive = true;
         }
         for (var i = 0; i < events.touches.length; i++) {
-            touch = events.touches[i];
+            var touch = events.touches[i];
             var posx = Math.round(96 * (touch.pageX - gamecontrols.offsetLeft) / gamecontrols.width);
             var posy = Math.round(40 * (touch.pageY - gamecontrols.offsetTop) / gamecontrols.height);
 
@@ -111,6 +122,12 @@ window.addEventListener("keydown", Controls.keyDown, false);
 window.addEventListener("keyup", Controls.keyUp, false);
 document.body.addEventListener("touchstart", Controls.touchStart, false);
 document.body.addEventListener("touchend", Controls.touchEnd, false);
+window.oncontextmenu = function(event) {
+    // Prevent popup menus
+    event.preventDefault();
+    event.stopPropagation();
+    return false;
+};
 
 // Graphics handlers
 
