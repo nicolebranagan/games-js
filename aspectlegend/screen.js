@@ -59,7 +59,8 @@ var LogoScreen = {
         }
         if (this.timer == 110 || this.timer == 186)
             PlaySound("whistle");
-        if (Controls.Enter) {
+        if (Controls.Enter || Controls.Shoot) {
+            Controls.Shoot = false;
             Controls.Enter = false;
             runner = new TextScreen(openingText, function() {runner = new TitleScreen()}, true);
         };
@@ -104,8 +105,9 @@ TextScreen.prototype = {
     },
     update: function() {
         this.timer++;
-        if (this.can_skip && Controls.Enter) {
+        if (this.can_skip && (Controls.Enter || Controls.Shoot)) {
             Controls.Enter = false;
+            Controls.Shoot = false;
             this.run();
         }
         if (this.timer > (144*3 + (this.text.length) * 128)) {

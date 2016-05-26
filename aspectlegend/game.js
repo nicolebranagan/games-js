@@ -150,6 +150,10 @@ var Game = {
                 PlaySound("pause");
                 PauseMusic();
             }
+            if (Controls.Reset) {
+                Controls.Reset = false;
+                Enemy.prototype.collect();
+            }
             this.player.moving = false;
             if (Controls.Up) {
                 this.player.moving = true;

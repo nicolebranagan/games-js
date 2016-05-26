@@ -31,6 +31,7 @@ var Controls = {
     Right: false,
     Shoot: false,
     Enter: false,
+    Reset: false,
 
     keyDown: function(event) {
         if (event.keyCode == 32) { // SPACE
@@ -47,6 +48,9 @@ var Controls = {
         }
         if (event.keyCode == 39 || event.keyCode == 68) {
             Controls.Right = true;
+        }
+        if (event.keyCode == 8) {
+            Controls.Reset = true;
         }
         if (event.keyCode == 13) {
             Controls.Enter = true;
@@ -71,6 +75,9 @@ var Controls = {
         }
         if (event.keyCode == 13) {
             Controls.Enter = false;
+        }
+        if (event.keyCode == 8) {
+            Controls.Reset = false;
         }
         if (event.keyCode == 9) {
             // Take screenshot
@@ -98,13 +105,13 @@ var Controls = {
             var touch = events.touches[i];
             var posx = Math.round(96 * (touch.pageX - gamecontrols.offsetLeft) / gamecontrols.width);
             var posy = Math.round(40 * (touch.pageY - gamecontrols.offsetTop) / gamecontrols.height);
-
             if (inRectangle(posx, posy, 14, 6, 12, 10)) Controls.Up = true;
             if (inRectangle(posx, posy, 14, 24, 12, 10)) Controls.Down = true;
             if (inRectangle(posx, posy, 5, 14, 10, 12)) Controls.Left = true;
             if (inRectangle(posx, posy, 25, 14, 10, 12)) Controls.Right = true;
-            if (inRectangle(posx, posy, 39, 11, 24, 20)) Controls.Enter = true;
-            if (inRectangle(posx, posy, 67, 7, 18, 25)) Controls.Shoot = true;
+            if (inRectangle(posx, posy, 41, 30, 13, 8)) Controls.Enter = true;
+            if (inRectangle(posx, posy, 41, 11, 13, 8)) Controls.Reset = true;
+            if (inRectangle(posx, posy, 74, 16, 12, 12)) Controls.Shoot = true;
         }
     },
     
@@ -115,6 +122,7 @@ var Controls = {
         Controls.Right = false;
         Controls.Shoot = false;
         Controls.Enter = false;
+        Controls.Reset = false;
     },
 };
 
