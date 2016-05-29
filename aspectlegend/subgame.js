@@ -122,7 +122,7 @@ Subgame.prototype = {
             }
         }, this);
         
-        if (this.tiles == 0) {
+        if (this.tiles == 0 && this.stage != 3) {
             this.win();
         }
     },
@@ -145,7 +145,8 @@ Subgame.prototype = {
         return parseFloat(a.y) - parseFloat(b.y);
         });
         for (var i=0; i < drawable.length; i++) {
-            drawable[i].draw(ctx);
+            if (drawable[i].active)
+                drawable[i].draw(ctx);
         }
         
         this.drawUI(ctx);
@@ -171,13 +172,21 @@ Subgame.prototype = {
         if (this.winCount > 0)
             return;
         this.winCount = 100;
-        this.tiles = 1;
-        // TODO: Sound effect    
+        if (this.stage == 3)
+            this.winCount = 300;
+        this.tiles = 1; 
     },
     
     winFunc: function() {
         if (this.stage != this.maxstages) {
             this.getStage(this.stage + 1);
+        } else {
+            // Push to next
+            Game.loadroom(6, 12);
+            Game.player.x = 3*16 + 8;
+            Game.player.y = 2*16 + 8;
+            Game.player.direction = 3;
+            runner = Game;
         }
     },
     
@@ -206,6 +215,7 @@ Subgame.prototype = {
         x: 80,
         y: 96,
         aspect: 2,
+        active: true,
         
         update: function() {
             if (Controls.Left) {
@@ -283,6 +293,12 @@ SubgameProjectile.prototype = {
                     this.parent.objects.push(new Explosion(e.x, e.y));
                     break;
                 }
+            } else if (this.up && e instanceof SubgameBoss) {
+                if (Math.abs(this.x - e.x) <= 8 && Math.abs(this.y - e.y) <= 8) {
+                    e.hurt();
+                    this.active = false;
+                    break;
+                }
             }
         }
         
@@ -308,6 +324,8 @@ var SubgameTile = function(x, y, color) {
 }
 
 SubgameTile.prototype = {
+    active: true,
+    
     update: function() {
         if (this.y != this.ygoal)
             this.y++;
@@ -339,6 +357,8 @@ SubgameEnemy.prototype = {
     
     ymax: 96,
     
+    active: true,
+    
     birdbrain: function() {
         this.timer++;
         if (this.y > this.ymax) {
@@ -355,7 +375,7 @@ SubgameEnemy.prototype = {
                 this.move(+1);
         }
         if (this.timer % 64 == 0) {
-            this.parent.objects.push(new SubgameProjectile(this.parent, false, this.x, this.y));
+            this.shoot();
         }
     },
     
@@ -384,7 +404,7 @@ SubgameEnemy.prototype = {
             }
         }
         if (this.timer % 128 == 0) {
-            this.parent.objects.push(new SubgameProjectile(this.parent, false, this.x, this.y));
+            this.shoot();
         }
     },
     
@@ -405,6 +425,10 @@ SubgameEnemy.prototype = {
         }
         this.x = this.x + delta;
         return true;
+    },
+    
+    shoot: function() {
+        this.parent.objects.push(new SubgameProjectile(this.parent, false, this.x, this.y));  
     }
 }
 
@@ -415,7 +439,15 @@ var SubgameBoss = function(parent) {
 }
 
 SubgameBoss.prototype = {
+    active: true,
+    
     timer: 0,
+    
+    phaseTimer: 0,
+    
+    phase: 1,
+    
+    health: 50,
     
     update: function() {
         if (this.waveTimer > 0)
@@ -431,22 +463,139 @@ SubgameBoss.prototype = {
             return;
         }
         
+        switch (this.phase) {
+            case 1:
+                this.phase1();
+                break;
+            case 2:
+                this.phase2();
+                break;
+            case 3:
+                this.phase = 4;
+                break;
+            case 4:
+                this.phaseTimer++;
+                if (this.phaseTimer == 16)
+                    this.parent.win();
+        }
+    },
+    
+    phase1: function() {
+        if (this.phaseTimer == 0) {
+            if (this.timer % 3 == 0 && this.x > 8) {
+                this.x--;
+                this.y++;
+                if (this.x <= 8) {
+                    this.wave();
+                    this.phaseTimer++;
+                }
+            };
+        } else if (this.phaseTimer == 1) {
+            if (this.timer % 4 == 0 && this.y > 16) {
+                this.y--;
+            }
+            if (this.timer % 4 == 0 && this.x < 152)
+                this.x++;
+            if (this.y == 16)
+                this.phaseTimer = 2;
+        } else if (this.phaseTimer == 2) {
+            if (this.timer % 3 == 0 && this.x < 152) {
+                this.x++;
+                this.y++;
+                if (this.x >= 152)
+                    this.phaseTimer++;
+            };
+        } else if (this.phaseTimer == 3) {
+            if (this.timer % 4 == 0 && this.y > 16) {
+                this.y--;
+            }
+            if (this.timer % 4 == 0 && this.x > 8)
+                this.x--;
+            if (this.y == 16) {
+                this.phaseTimer = 0;
+                if (this.health < 35)
+                    this.phase = 2;
+                else
+                    this.wave();
+            }
+        }
+        if ((this.timer - 25) % 64 == 0) {
+            this.wave();
+        }
+        if (this.timer % 64 == 0) {
+            this.shoot();
+        }
         
     },
     
+    phase2: function() {
+        if (this.phaseTimer == 0) {
+            this.x--;
+            if (this.x == 8) {
+                this.phaseTimer = 1;
+            }
+        } else if (this.phaseTimer == 1) {
+            if (this.timer % 2 == 0) {
+                this.shoot();
+                this.x++;
+                if (this.x == 80)
+                    this.phaseTimer = 2;
+            }
+        } else if (this.phaseTimer == 2) {
+            this.x++;
+            if (this.x == 152) {
+                this.phaseTimer = 3;
+            }
+        } else if (this.phaseTimer == 3) {
+            if (this.timer % 2 == 0) {
+                this.shoot();
+                this.x--;
+                if (this.x == 80) {
+                    this.phaseTimer = 0;
+                    if (this.health % 2 == 0)
+                        this.phase = 1;
+                }
+            }
+        }
+    },
+    
     draw: function(ctx) {
-        ctx.drawImage(gfx.objects, 16 * 11 + ((this.waveTimer > 0) ? 16 : 0), 3 * 16 + 8, 16, 24, this.x - 8, this.y - 8, 16, 24);
+        if (this.phase == 4) {
+            ctx.drawImage(gfx.objects, 16 * 11, 4 * 16 + 8, 16, 8, this.x - 8, this.y + 8, 16, 8);
+        } else {
+            ctx.drawImage(gfx.objects, 16 * 11 + ((this.waveTimer > 0) ? 16 : 0), 3 * 16 + 8, 16, 24, this.x - 8, this.y - 8, 16, 24);
+        }
     },
     
     waveTimer: 0,
     
     wave: function() {
         this.waveTimer = 50;
+    },
+    
+    shoot: function() {
+        this.parent.objects.push(new SubgameProjectile(this.parent, false, this.x, this.y));
+    },
+    
+    hurt: function() {
+        this.health--;
+        if (this.health == 0) {
+            for (var i = 0; i < this.parent.objects.length; i++) {
+                var e = this.parent.objects[i];
+                if (e instanceof SubgameProjectile)
+                    e.active = false;
+            }
+            this.parent.textBox(["I am just doing...", "as I was designed..."]);
+            PlayMusic("mystery");
+            this.phaseTimer = 0;
+            this.phase = 3;
+        }
     }
 }
 
 var SubgameStages = [
     {
+  
         tilemap: [
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 1, 2, 1, 2, 1, 2, 1, 2, 0,
