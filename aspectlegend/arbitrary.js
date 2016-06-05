@@ -188,12 +188,20 @@ var Arbitrary = function(invar) {
         talker.direction = 0;
         talker.say = function() {this._say(); Game.spoken_to = true; this.text = ["\"Meow!\""]};
         Game.objects.push(talker);
+    } else if (invar[0] == 230) {
+        var runner = getRunner(invar, 1, ["Meow!"], 0);
+        runner.timer = 2;
+        runner.direction = 2;
+        Game.objects.push(runner);
+        Game.objects.push(getTalkOnEnter(invar, ["[The imperial palace... it's been too long.]","\"Hey, it's time you started to explain things to me!\"", "[It's time you realized there's no time!]", "\"Just tell me who you are!\"", "[Didn't you know? I'm Nicole!", "And, well, so are you...", "But we're low on time!]"]));
     } else if (invar[0] == 300) {
         Game.blocks.push(floorTile(invar));
     } else if (invar[0] == 301) {
         Game.objects.push(new blockDoor(invar, true));
     } else if (invar[0] == 302) {
         Game.objects.push(new blockDoor(invar, false));
+    } else if (invar[0] == 303) {
+        Game.objects.push(new stallDoor(invar, false));
     }
 }
 
@@ -313,6 +321,12 @@ wideDoor.prototype = {
                     this.active = false;
                 }
             }
+        } else if (this.splitTimer > 16) {
+            this.lag--;
+            if (this.lag == 0) {
+                this.splitTimer--;
+                this.lag = 2;
+            }
         }
     },
     
@@ -386,7 +400,7 @@ var getTalkOnEnter = function(invar, text) {
             Game.textBox(text);
             this.invar[3] = false;
             this.active = false;
-        }
+            }
     };
     return talker;
 }
@@ -568,7 +582,34 @@ blockDoor.prototype = {
                 return;
         }
         this.door.open()
+        PlaySound("appear");
         this.active = false;
         this.invar[3] = false;
     }
 };
+
+var stallDoor = function(invar, horz) {
+    this.invar = invar;
+}
+
+stallDoor.prototype = {
+    collect: function() { ; },
+    
+    draw: function(ctx) { ; },
+    
+    update: function() {
+        if (!this.invar[3])
+            this.active = false;
+        if (Game.player.x < (8*16 + 8)) {
+            this.activate();
+            this.active = false;
+        }
+    },
+    
+    activate: function() {
+        PlaySound("push");
+        var door = new blockDoor(this.invar, false);
+        door.door.splitTimer = 48;
+        Game.blocks.push(door);
+    }
+}

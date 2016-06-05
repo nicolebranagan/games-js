@@ -183,7 +183,7 @@ Subgame.prototype = {
         } else {
             // Push to next
             Game.loadroom(6, 12);
-            Game.player.x = 3*16 + 8;
+            Game.player.x = 4*16 + 8;
             Game.player.y = 2*16 + 8;
             Game.player.direction = 3;
             runner = Game;
