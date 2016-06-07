@@ -12,16 +12,31 @@ function Loop() {
     runner.update();
     runner.draw(ctx);
     if (__debug) {
+        ctx.clearRect(0, 0, 8*3, 8);
         drawText(ctx, 0, 0, Math.floor(checkFPS()).toString());
     };
 };
 
-var lastTime = new Date;
+var fps = {
+    lastTime: new Date,
+    last: 0,
+    set: []
+}
+
 function checkFPS() { 
     var thisTime = new Date;
-    var fps = 1000 / (thisTime - lastTime);
-    lastTime = thisTime;
-    return fps;
+    var newfps = 1000 / (thisTime - fps.lastTime);
+    fps.lastTime = thisTime;
+    fps.set.push(newfps)
+    if (fps.set.length >= 60    ) {
+        fps.last = 0;
+        for (var i = 0; i < fps.set.length; i++) {
+            fps.last += fps.set[i];
+        }
+        fps.last = fps.last / fps.set.length;
+        fps.set = [];
+    }
+    return fps.last;
 }
 
 var Controls = {

@@ -75,7 +75,10 @@ var Game = {
             var e = worldfile.rooms[i]
             if (e != 0) {
                 for(var j=0; j<e.objects.length; j++) {
-                    e.objects[j][3] = this.snapshot.objects[i][j];
+                    if (typeof this.snapshot.objects[i][j] != "undefined")
+                        e.objects[j][3] = this.snapshot.objects[i][j];
+                    else
+                        e.objects[j][3] = true;
                 }
             }
         }

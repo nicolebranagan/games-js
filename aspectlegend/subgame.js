@@ -186,6 +186,7 @@ Subgame.prototype = {
             Game.player.x = 4*16 + 8;
             Game.player.y = 2*16 + 8;
             Game.player.direction = 3;
+            Game.player.aspect = 0;
             runner = Game;
         }
     },
