@@ -215,6 +215,17 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+Array.prototype.compare = function(array2) {
+    for (var i = 0; i < this.length; i++) {
+        for (var j = 0; j < array2.length; j++) {
+            if (this[i] != array2[j]) {
+                return array2[j];
+            }
+        }
+    }
+    return false;
+}
+
 // Text-drawing functions
 
 function drawText(ctx, x, y, text) {

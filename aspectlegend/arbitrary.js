@@ -236,11 +236,20 @@ arbKillAll.prototype = {
         }
     },
     
+    objects: [],
+    
     check: function() {
         for (var i=0; i < Game.objects.length; i++) {
             var obj = Game.objects[i];
-            if (obj instanceof Enemy)
+            if (obj instanceof Enemy) {
+                this.objects = Game.objects.slice(0);
                 return false;
+            }
+        }
+        var lastobj = Game.objects.compare(this.objects);
+        if (lastobj) {
+            this.reward[1] = Math.floor(lastobj.x / 16);
+            this.reward[2] = Math.floor(lastobj.y / 16);
         }
         return true;
     },
