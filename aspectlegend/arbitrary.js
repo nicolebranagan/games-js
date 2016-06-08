@@ -194,6 +194,19 @@ var Arbitrary = function(invar) {
         runner.direction = 2;
         Game.objects.push(runner);
         Game.objects.push(getTalkOnEnter(invar, ["[The imperial palace... it's been too long.]","\"Hey, it's time you started to explain things to me!\"", "[It's time you realized there's no time!]", "\"Just tell me who you are!\"", "[Didn't you know? I'm Nicole!", "And, well, so are you...", "But we're low on time!]"]));
+    } else if (invar[0] == 231) {
+        Game.objects.push(new stallDoor(invar, false, function() {
+            return (Math.floor(Game.player.x / 16) == 3) && 
+                    (Math.floor(Game.player.y / 16) == 5)
+        }, false));
+    } else if (invar[0] == 232) {
+        Game.objects.push(new blockDoor(invar, true, 71, 64));
+    } else if (invar[0] == 233) {
+        invar = invar.slice(0);
+        invar[0] = 100;
+        var block = new Block(invar);
+        block.type = 169;
+        Game.blocks.push(block);
     } else if (invar[0] == 300) {
         Game.blocks.push(floorTile(invar));
     } else if (invar[0] == 301) {
@@ -201,7 +214,9 @@ var Arbitrary = function(invar) {
     } else if (invar[0] == 302) {
         Game.objects.push(new blockDoor(invar, false));
     } else if (invar[0] == 303) {
-        Game.objects.push(new stallDoor(invar, false));
+        Game.objects.push(new stallDoor(invar, false, function() {return (Game.player.x < (8*16 + 8))}, true));
+    } else if (invar[0] == 304) {
+        Game.blocks.push(floorTile(invar, true));
     }
 }
 
@@ -279,16 +294,21 @@ dummyBlock.prototype = {
     update: function() { ; }
 }
 
-var wideDoor = function(invar, horz, centerpiece) {
+var wideDoor = function(invar, horz, centerpiece, sidepiece, hidden) {
     this.invar = invar;
     this.x = invar[1] * 16 + 8;
     this.y = invar[2] * 16 + 8;
     this.horz = horz;
     this.active = invar[3];
+    this.hidden = hidden ? true : false;
     if (centerpiece)
         this.centerpiece = centerpiece;
     else
         this.centerpiece = 15;
+    if (sidepiece)
+        this.sidepiece = sidepiece;
+    else
+        this.sidepiece = 3;
     if (this.active) {
         // Build dummy object
         var dummyX = this.x;
@@ -304,16 +324,18 @@ wideDoor.prototype = {
     splitTimer: 16,
     
     draw: function(ctx) {
+        if (this.hidden && this.splitTimer == 16)
+            return;
         if (this.horz) {
-            ctx.drawImage(gfx.blocks, 3*16, 0, 8, 16, this.x - 8 - (16 - this.splitTimer), this.y - 8, 8, 16)
+            ctx.drawImage(gfx.blocks, (this.sidepiece)*16, 0, 8, 16, this.x - 8 - (16 - this.splitTimer), this.y - 8, 8, 16)
             ctx.drawImage(gfx.blocks, (this.centerpiece)*16, 0, 8, 16, this.x - (16 - this.splitTimer), this.y - 8, 8, 16)
             ctx.drawImage(gfx.blocks, (this.centerpiece)*16 + 8, 0, 8, 16, this.x + 8 + (16 - this.splitTimer), this.y - 8, 8, 16)
-            ctx.drawImage(gfx.blocks, 3*16 + 8, 0, 8, 16, this.x + 16 + (16 - this.splitTimer), this.y - 8, 8, 16)
+            ctx.drawImage(gfx.blocks, (this.sidepiece)*16 + 8, 0, 8, 16, this.x + 16 + (16 - this.splitTimer), this.y - 8, 8, 16)
         } else {
-            ctx.drawImage(gfx.blocks, 3*16, 0, 16, 8, this.x - 8, this.y - 8 - (16 - this.splitTimer), 16, 8)
+            ctx.drawImage(gfx.blocks, (this.sidepiece)*16, 0, 16, 8, this.x - 8, this.y - 8 - (16 - this.splitTimer), 16, 8)
             ctx.drawImage(gfx.blocks, (this.centerpiece)*16, 0, 16, 8, this.x - 8, this.y - (16 - this.splitTimer), 16, 8)
             ctx.drawImage(gfx.blocks, (this.centerpiece)*16, 8, 16, 8, this.x - 8, this.y + 8 + (16 - this.splitTimer), 16, 8)
-            ctx.drawImage(gfx.blocks, 3*16, 8, 16, 8, this.x - 8, this.y + 16 + (16 - this.splitTimer), 16, 8)
+            ctx.drawImage(gfx.blocks, (this.sidepiece)*16, 8, 16, 8, this.x - 8, this.y + 16 + (16 - this.splitTimer), 16, 8)
         }
     },
     
@@ -510,13 +532,15 @@ var getDoor = function(invar, onhit) {
     return door;
 };
 
-var floorTile = function(invar) {
+var floorTile = function(invar, hidden) {
     var block = new Block(invar);
     block.floorTile = true;
     block.active = true;
     block.animCount = 0;
     block.frame = 0;
     block.draw = function(ctx) {
+        if (hidden)
+            return;
         if (this.animCount == 10) {
             this.animCount = 0;
             this.frame++
@@ -532,18 +556,37 @@ var floorTile = function(invar) {
     return block;
 };
 
-var blockDoor = function(invar, horz) {
+var blockDoor = function(invar, horz, hidden, under) {
     this.invar = invar;
+    this.horz = horz;
     this.timer = 0;
     this.blocks = [];
     this.tiles = [];
     this.active = this.invar[3];
-    
+    if (hidden) {
+        this.hidden = hidden;
+        this.under = under;
+    }
+    else
+        this.hidden = false;
+
     if (this.invar[3]) {
-        var door = new wideDoor(invar, horz, 3);
+        var door;
+        if (this.hidden)
+            door = new wideDoor(invar, horz, hidden, hidden, true);
+        else
+            door = new wideDoor(invar, horz, 3);
         door.collide = door.contact;
         Game.blocks.push(door);
         this.door = door;
+    } else if (this.hidden) {
+        Game.tileMap = Game.tileMap.slice(0);
+        Game.tileMap[this.invar[1] + this.invar[2]*10] = this.under;
+        if (this.horz) {
+            Game.tileMap[this.invar[1] + this.invar[2]*10 + 1] = this.under;
+        } else {
+            Game.tileMap[this.invar[1] + this.invar[2]*10 + 10] = this.under;
+        }
     }
 };
 
@@ -590,6 +633,15 @@ blockDoor.prototype = {
             if (!covered)
                 return;
         }
+        if (this.hidden) {
+            Game.tileMap = Game.tileMap.slice(0);
+            Game.tileMap[this.invar[1] + this.invar[2]*10] = this.under;
+            if (this.horz) {
+                Game.tileMap[this.invar[1] + this.invar[2]*10 + 1] = this.under;
+            } else {
+                Game.tileMap[this.invar[1] + this.invar[2]*10 + 10] = this.under;
+            }
+        }
         this.door.open()
         PlaySound("appear");
         this.active = false;
@@ -597,8 +649,11 @@ blockDoor.prototype = {
     }
 };
 
-var stallDoor = function(invar, horz) {
+var stallDoor = function(invar, horz, condition, block) {
+    this.condition = condition;
+    this.horz = horz;
     this.invar = invar;
+    this.block = block;
 }
 
 stallDoor.prototype = {
@@ -609,7 +664,7 @@ stallDoor.prototype = {
     update: function() {
         if (!this.invar[3])
             this.active = false;
-        if (Game.player.x < (8*16 + 8)) {
+        if (this.condition()) {
             this.activate();
             this.active = false;
         }
@@ -617,8 +672,15 @@ stallDoor.prototype = {
     
     activate: function() {
         PlaySound("push");
-        var door = new blockDoor(this.invar, false);
-        door.door.splitTimer = 48;
+        var door;
+        if (this.block) {
+            door.door.splitTimer = 48;
+            door = new blockDoor(this.invar, this.horz);
+        }
+        else {
+            door = new wideDoor(this.invar, this.horz);
+            door.splitTimer = 48;
+        }
         Game.blocks.push(door);
     }
 }
