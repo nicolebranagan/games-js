@@ -217,6 +217,8 @@ var Arbitrary = function(invar) {
         Game.objects.push(new stallDoor(invar, false, function() {return (Game.player.x < (8*16 + 8))}, true));
     } else if (invar[0] == 304) {
         Game.blocks.push(floorTile(invar, true));
+    } else if (invar[0] >= 400) {
+        Game.blocks.push(oneUseAspect(invar, invar[0] - 400))
     }
 }
 
@@ -654,6 +656,11 @@ var stallDoor = function(invar, horz, condition, block) {
     this.horz = horz;
     this.invar = invar;
     this.block = block;
+
+    if (this.invar[3] == false)
+        this.active = false;
+    else
+        this.active = true;
 }
 
 stallDoor.prototype = {
@@ -662,6 +669,8 @@ stallDoor.prototype = {
     draw: function(ctx) { ; },
     
     update: function() {
+        if (!this.active)
+            return;
         if (!this.invar[3])
             this.active = false;
         if (this.condition()) {
@@ -674,8 +683,8 @@ stallDoor.prototype = {
         PlaySound("push");
         var door;
         if (this.block) {
-            door.door.splitTimer = 48;
             door = new blockDoor(this.invar, this.horz);
+            door.door.splitTimer = 48;
         }
         else {
             door = new wideDoor(this.invar, this.horz);
@@ -683,4 +692,23 @@ stallDoor.prototype = {
         }
         Game.blocks.push(door);
     }
+}
+
+var oneUseAspect = function(invar, aspect) {
+    var block = new Block(invar);
+    block.active = true;
+    block.aspect = aspect;
+    block.collide = function() {
+        if (this.active && this.splitTimer == 0) {
+            if (this.aspect != Game.player.aspect) {
+                PlaySound("aspect");
+                Game.player.aspect = this.aspect;
+            }
+            this.splitTimer = 8;
+        }
+    };
+    block.contact = function(caller) { return false; };
+    block.type = 187 + block.aspect;
+    
+    return block;
 }
