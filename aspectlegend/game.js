@@ -104,6 +104,7 @@ var Game = {
     },
 
     loadroom: function(x, y, skip) {
+        var oldarea = this.area;
         var oldroom = this.tileMap;
         var oldx = this.roomx;
         var oldy = this.roomy;
@@ -130,8 +131,7 @@ var Game = {
                 Arbitrary(item);
             }
         });
-        
-        if (!skip)
+        if (!skip && this.area != 9 && oldarea != 9)
             runner = new FlipScreen(oldroom, this.tileMap, oldx != x, oldx < x || oldy < y);
     },
 

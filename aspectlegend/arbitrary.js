@@ -207,6 +207,22 @@ var Arbitrary = function(invar) {
         var block = new Block(invar);
         block.type = 169;
         Game.blocks.push(block);
+    } else if (invar[0] == 234) {
+        Game.objects.push(new stallDoor(invar, true, function() {
+            return (Math.floor((Game.player.y - 8) / 16) == 4)
+        }, true));
+    } else if (invar[0] == 235) {
+        Game.objects.push(new stallDoor(invar, true, function() {
+            return (Math.floor((Game.player.y - 8) / 16) == 5)
+        }, true));
+    } else if (invar[0] == 236) {
+        var runner = getRunner(invar, 1, ["\"Meow!\"", "[This is the last point]", "\"What are you talking about? Who even am I, dammit?\"", "[You're Nicole. I'm Nicole.","But there can only be one Nicole.]","\"That means nothing.\"","[Pass through the final gateway and maybe that'll change...]"], 3);
+        runner.direction = 2;
+        Game.objects.push(runner);
+    } else if (invar[0] == 237) {
+        Game.objects.push(getTalkOnEnter(invar, ["\"What is this place?\"", "[The world isn't real. None of it.", "But a fictional world isn't any fun.", "I had to convince myself it was real, allow the machine to effect my brain...", "But we went too far.]"]));
+    } else if (invar[0] == 238) {
+        Game.objects.push(getTalkOnEnter(invar, ["[There is a network of clones of me inside the world,", "Even if one of me dies, my consciousness will always be safe.", "But what happens if two of me were active at once?]","...", "\"It can't be... Am I just a tool in some game?\""]));
     } else if (invar[0] == 300) {
         Game.blocks.push(floorTile(invar));
     } else if (invar[0] == 301) {
@@ -613,8 +629,9 @@ blockDoor.prototype = {
             return;
         if (this.timer < 2) {
             this.timer++;
-            if (this.timer == 2)
+            if (this.timer == 2) {
                 this.governor();
+            }
             else
                 return;
         }
