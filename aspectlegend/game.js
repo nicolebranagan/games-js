@@ -358,7 +358,8 @@ var Game = {
         var pass = false;
         for(var i = 0; i < Game.blocks.length; i++) {
             var block = Game.blocks[i];
-            if (Math.abs(block.x - x) <= 8 && Math.abs(block.y - y) <= 8) {
+            if ((Math.abs(block.x - x) < 8 || x - block.x == -8) && 
+                (Math.abs(block.y - y) < 8 || y - block.y == -8)) {
                 if (self instanceof Player)
                     pass = pass || block.collide();
                 else
