@@ -175,7 +175,7 @@ FlipScreen.prototype = {
 }
 
 var OptionsScreen = function() {
-    this.music = ["title"].concat(Game.music, ["spiral", "phasic"]);
+    this.music = ["title"].concat(Game.music, ["spiral", "tapenade", "phasic"]);
     PlayMusic("");
 }
 
@@ -263,4 +263,43 @@ OptionsScreen.prototype = {
             }
         }
     },
+};
+
+var EndScreen = function() {
+    this.timer = 0;
+    this.phrase = ["", ""];
 }
+
+EndScreen.prototype = {
+    update: function() {
+        this.timer++;
+        if (this.timer > 100) {
+            PlayMusic("where", true);
+            this.phrase = ["Hello?", ""];
+        }
+        if (this.timer > 670)
+            this.phrase = ["Is anybody", "out there?"];
+        if (this.timer > 1300)
+            this.phrase = ["", ""];
+        if (this.timer > 1500) {
+            PlayMusic("phasic");
+            runner = new TextScreen(creditsText, function() {;}, false);
+        }
+    },
+
+    draw: function(ctx) {
+        var x = 16;
+        var y = 56;
+        for (var i = 0; i < this.phrase[0].length; i++) {
+            if (Math.random() < 0.7)
+                drawText(ctx, x + i*8, y, this.phrase[0].charAt(i));
+        }
+        y = 70;
+        x = 48;
+        for (var i = 0; i < this.phrase[1].length; i++) {
+            if (Math.random() < 0.9)
+                drawText(ctx, x + i*8, y, this.phrase[1].charAt(i));
+        }
+    },
+}
+

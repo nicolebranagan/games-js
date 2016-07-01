@@ -220,9 +220,42 @@ var Arbitrary = function(invar) {
         runner.direction = 2;
         Game.objects.push(runner);
     } else if (invar[0] == 237) {
-        Game.objects.push(getTalkOnEnter(invar, ["\"What is this place?\"", "[The world isn't real. None of it.", "But a fictional world isn't any fun.", "I had to convince myself it was real, allow the machine to effect my brain...", "But we went too far.]"]));
+        Game.objects.push(getTalkOnEnter(invar, ["\"What is this place?\"", "[The world isn't real. None of it.", "It runs upon an advanced, tri-state computer system of mine and Mary's own design.", "But a fictional world isn't any fun.", "I had to convince myself it was real, allow the machine to effect my brain...", "But we went too far.]"]));
     } else if (invar[0] == 238) {
-        Game.objects.push(getTalkOnEnter(invar, ["[There is a network of clones of me inside the world,", "Even if one of me dies, my consciousness will always be safe.", "But what happens if two of me were active at once?]","...", "\"It can't be... Am I just a tool in some game?\""]));
+        Game.objects.push(getTalkOnEnter(invar, ["[There is a network of clones of me inside the world,", "Even if one of me dies, my consciousness will always be safe.", "But what happens if two of me were active at once?]"]));
+    } else if (invar[0] == 239) {
+        Game.objects.push(getTalkOnEnter(invar, ["\"That was like a place where you would see a boss...", "But it was empty?\"","[Don't you understand? The real enemy here... is us.]"]));
+    } else if (invar[0] == 240) {
+        PlayMusic("tapenade");
+    } else if (invar[0] == 241) {
+        getEnding(invar);
+    } else if (invar[0] == 242) {
+        var portal = new GameObject();
+        portal.x = invar[1] * 16 + 8;
+        portal.y = invar[2] * 16 + 8;
+        portal.row = 200;
+        portal.aspect = -1;
+        portal.active = true;
+        portal.running = true;
+        portal.timer = 300;
+        portal.collect = function() {
+            if (this.running) {
+                PlayMusic("");
+                PlaySound("crystal");
+                Game.player.frozen = true;
+                this.running = false;
+                this.timer = 299;
+            }
+        };
+        portal.update = function() {
+            this._update();
+            if (this.timer < 300) {
+                this.timer--;
+                if (this.timer == 0)
+                    window.runner = new EndScreen();
+            }
+        }
+        Game.objects.push(portal);
     } else if (invar[0] == 300) {
         Game.blocks.push(floorTile(invar));
     } else if (invar[0] == 301) {
@@ -728,4 +761,46 @@ var oneUseAspect = function(invar, aspect) {
     block.type = 187 + block.aspect;
     
     return block;
+}
+
+var getEnding = function(invar) {
+    var miranda = getTalker(invar, 3, ["Please don't do this."]);
+    miranda.direction = 3;
+    miranda.x = -16;
+    miranda.y = -16;
+
+    var cat = getRunner(invar, 1, ["[Enter through this gateway, and it'll all end.","We'll be outside this world and into the real one.","But this world can't survive regardless.]"], 1);
+    cat.direction = 2;
+    cat.__speak = cat.speak;
+    cat.speak = function() {
+        var move = this.moving;
+        this.__speak();
+        if (!this.moving) {
+            this._speak();
+            this.timer = 3;
+            // Continue;
+        }
+    }
+    cat.timer = 4;
+    cat.update = function() {
+        if (this.y < 16*3) {
+            PlaySound("crystal");
+            this.active = false;
+        }
+        if (!this.moving && this.timer < 4) {
+            this.timer--;
+            if (this.timer == 1) {
+                miranda.x = 16;
+                miranda.y = 4 * 16 + 8;
+                Game.textBox(["Miranda: You don't know that.", "I can't stop you now, but this decision is your own."])
+            }
+            if (this.timer == 0) {
+                this.direction = this.rundir;
+                this.moving = true;
+            }
+        }
+        this._update();
+    }
+    Game.objects.push(cat);
+    Game.objects.push(miranda);
 }

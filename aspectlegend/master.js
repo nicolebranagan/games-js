@@ -268,7 +268,14 @@ var PlaySound = function(sound) {
 var bgMusic;
 //var bgMusic.paused = false;
 var currentSong = "";
-var PlayMusic = function(sound) {
+var PlayMusic = function(sound, playOnce) {
+    if (__debug)
+        console.log(sound);
+    var loop;
+    if (playOnce)
+        loop = false;
+    else
+        loop = true;
     if (!musicEnabled)
         return;
     if (currentSong === sound)
@@ -286,7 +293,7 @@ var PlayMusic = function(sound) {
         urls: ["./music/" + sound + ".ogg"],
         volume: 0.6,
         autoplay: true,
-        loop: true,
+        loop: loop,
     });
     bgMusic.paused = false;
     currentSong = sound;

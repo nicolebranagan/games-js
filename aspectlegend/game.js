@@ -24,7 +24,8 @@ var Game = {
 
     reset: function(newgame) {
         this.player = new Player();
-        
+        this.player.frozen = false;
+
         // Clean worldfile
         worldfile.rooms.forEach(function(e1, i) {
             if (e1 != 0) {
@@ -113,10 +114,10 @@ var Game = {
         this.tileMap = worldfile.rooms[x + y * 16].tiles;
         
         // Don't change area if area == -1
-        if (worldfile.rooms[x + y * 16].area !== -1)
+        if (worldfile.rooms[x + y * 16].area !== -1) {
             this.area = worldfile.rooms[x + y * 16].area;
-        
-        PlayMusic(this.music[this.area]);
+            PlayMusic(this.music[this.area]);
+        }
 
         this.objects = new Array();
         this.blocks = new Array();
@@ -158,16 +159,16 @@ var Game = {
                 Enemy.prototype.collect();
             }
             this.player.moving = false;
-            if (Controls.Up) {
+            if (Controls.Up && !this.player.frozen) {
                 this.player.moving = true;
                 this.player.direction = 1;
-            } else if (Controls.Down) {
+            } else if (Controls.Down && !this.player.frozen) {
                 this.player.moving = true;
                 this.player.direction = 0;
-            } else if (Controls.Left) {
+            } else if (Controls.Left && !this.player.frozen) {
                 this.player.moving = true;
                 this.player.direction = 2;
-            } else if (Controls.Right) {
+            } else if (Controls.Right && !this.player.frozen) {
                 this.player.moving = true;
                 this.player.direction = 3;
             }
