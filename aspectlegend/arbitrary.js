@@ -83,11 +83,7 @@ var Arbitrary = function(invar) {
     } else if (invar[0] == 218) {
         if (Game.crystals > 3)
             return;
-        var talker = getTalker(invar, 3, ["I am Miranda, leader of the cult of the god-empress.", 
-        "You seem familiar to me.",
-        "I will tell you a secret. The Princess Mary, our beloved god-empress, has disappeared, and taken Nicole with her.",
-        "I have caused this incident to distract my cult, but I worry now if I have done the right thing.",
-        "Take this crystal, and with it, my hope."], false);
+        var talker = getTalker(invar, 3, ["I am Miranda, leader of the cult of the god-empress.", "You seem familiar to me.", "I will tell you a secret. The Princess Mary, our beloved god-empress, has disappeared, and taken Nicole with her.", "...", "I don't trust you, but I believe this crystal belongs to you."], false);
         talker.say = function() {
             Game.textBox(this.text);
             if (Game.crystals == 2) 
@@ -106,7 +102,7 @@ var Arbitrary = function(invar) {
                     PlaySound("crystal");
             }
             if (Game.crystals === 3)
-                this.text = ["Hurry, young cat-eared one.", "Perhaps you should examine the abandoned garrison to the south."];            
+                this.text = ["You should examine the abandoned garrison to the south.", "Perhaps there's another crystal there.", "Or perhaps you'll die there."];            
         } 
         talker.direction = 1;
         Game.objects.push(talker);
@@ -117,7 +113,7 @@ var Arbitrary = function(invar) {
         talker2.direction = 2;
         Game.objects.push(talker2);
     } else if (invar[0] == 220) {
-        var talker1 = getTalker(invar, 2, ["Miranda trusts you for some reason."], false);
+        var talker1 = getTalker(invar, 2, ["Miranda fears you for some reason."], false);
         if (Game.crystals > 3)
             talker1.text = ["I wish we had chairs, but alas they are anathema."]
         talker1.direction = 3;
@@ -193,7 +189,7 @@ var Arbitrary = function(invar) {
         runner.timer = 2;
         runner.direction = 2;
         Game.objects.push(runner);
-        Game.objects.push(getTalkOnEnter(invar, ["[The imperial palace... it's been too long.]","\"Hey, it's time you started to explain things to me!\"", "[It's time you realized there's no time!]", "\"Just tell me who you are!\"", "[Didn't you know? I'm Nicole!", "And, well, so are you...", "But we're low on time!]"]));
+        Game.objects.push(getTalkOnEnter(invar, ["[The imperial palace... it's been too long.]","\"Hey, it's time you started to explain things to me!\"", "[It's time you realized there's no time!]", "\"Just tell me who you are!\"", "[Didn't you know? I'm Nicole!", "...", "And, well, so are you...]", "\"What?\"", "[Just keep going!]"]));
     } else if (invar[0] == 231) {
         Game.objects.push(new stallDoor(invar, false, function() {
             return (Math.floor(Game.player.x / 16) == 3) && 
@@ -216,15 +212,17 @@ var Arbitrary = function(invar) {
             return (Math.floor((Game.player.y - 8) / 16) == 5)
         }, true));
     } else if (invar[0] == 236) {
-        var runner = getRunner(invar, 1, ["\"Meow!\"", "[This is the last point]", "\"What are you talking about? Who even am I, dammit?\"", "[You're Nicole. I'm Nicole.","But there can only be one Nicole.]","\"That means nothing.\"","[Pass through the final gateway and maybe that'll change...]"], 3);
+        var runner = getRunner(invar, 1, ["\"Meow!\"", "[This is the last point]", "\"What are you talking about?\"", "[You're Nicole. I'm Nicole.","Isn't that a contradiction?]","\"...\"","[Pass through the final gateway and maybe that'll change...]"], 3);
         runner.direction = 2;
         Game.objects.push(runner);
     } else if (invar[0] == 237) {
-        Game.objects.push(getTalkOnEnter(invar, ["\"What is this place?\"", "[The world isn't real. None of it.", "It runs upon an advanced, tri-state computer system of mine and Mary's own design.", "But a fictional world isn't any fun.", "I had to convince myself it was real, allow the machine to effect my brain...", "But we went too far.]"]));
+        Game.objects.push(getTalkOnEnter(invar, ["\"What is this place?\"", "[The world isn't real. None of it.", "It runs upon an advanced, tri-state computer system of mine and Mary's own design.", "To run the virtual world, two people must use the mind.]"]));
     } else if (invar[0] == 238) {
         Game.objects.push(getTalkOnEnter(invar, ["[There is a network of clones of me inside the world,", "Even if one of me dies, my consciousness will always be safe.", "But what happens if two of me were active at once?]"]));
+    } else if (invar[0] == 2385) {
+        Game.objects.push(getTalkOnEnter(invar, ["[The system requires two minds within it at all time for stability.", "All of these problems happened when Mary disappeared.]"]));
     } else if (invar[0] == 239) {
-        Game.objects.push(getTalkOnEnter(invar, ["\"That was like a place where you would see a boss...", "But it was empty?\"","[Don't you understand? The real enemy here... is us.]"]));
+        Game.objects.push(getTalkOnEnter(invar, ["\"That was like a place where you would see a boss...", "But it was empty?\"", "[It's all collapsed. The world can't handle any more objects.]"]));
     } else if (invar[0] == 240) {
         PlayMusic("tapenade");
     } else if (invar[0] == 241) {
@@ -792,7 +790,7 @@ var getEnding = function(invar) {
             if (this.timer == 1) {
                 miranda.x = 16;
                 miranda.y = 4 * 16 + 8;
-                Game.textBox(["Miranda: You don't know that.", "I can't stop you now, but this decision is your own."])
+                Game.textBox(["Miranda: You don't know that.", "I can't stop you now, but this decision is your own.", "Just know this.", "The people of this world are real to me."])
             }
             if (this.timer == 0) {
                 this.direction = this.rundir;
