@@ -11,7 +11,8 @@ TitleScreen.prototype = {
             Controls.Enter = false;
             if (this.selection == 0) {
                 // New Game
-                Game.activate(true);
+                //Game.activate(true);
+                runner = new ControlsScreen();
             } else if (this.selection == 1) {
                 // Continue
                 var saved = localStorage.getItem('saved');
@@ -303,3 +304,59 @@ EndScreen.prototype = {
     },
 }
 
+var ControlsScreen = function() {
+    PlayMusic("");
+    this.player = new GameObject();
+    this.player.animate = true;
+    this.player.x = 32;
+    this.player.y = 5*8;
+    this.timer = 0;
+    this.room = worldfile.rooms[getRandomInt(0,6)].tiles;
+};
+
+ControlsScreen.prototype = {
+    draw: function(ctx) {
+        this.drawRoom(ctx);
+        drawCenteredText(ctx, 2*8, "Controls");
+        this.player.draw(ctx);
+        drawText(ctx, 6*8, this.player.y - 8, "Arrow keys");
+        drawText(ctx, 6*8, this.player.y, "or WASD");
+        drawText(ctx, 2*8, 7*8, "Shoot: Space");
+        drawText(ctx, 3*8, 8*8, "Talk: Space");
+        drawCenteredText(ctx, 9*8, "Reset: Backspace");
+        drawText(ctx, 2*8, 10*8, "Pause: Enter");
+
+        drawCenteredText(ctx, 12*8, "For mobile,")
+        drawCenteredText(ctx, 13*8, "tap screen")
+
+        drawCenteredText(ctx, 15*8, "Press 'Pause'")
+    },
+
+    drawRoom: function(ctx) {
+        for (var y = 0; y < 9; y++) {
+            for (var x = 0; x < 10; x++) {
+                var y2 = y;
+                if (y == 7)
+                    y2 = 6;
+                else if (y > 7)
+                    y2 = 7;
+                ctx.drawImage(gfx.tiles, 16 * this.room[x + y2 * 10], 0, 16, 16, x * 16, y * 16, 16, 16);
+            }
+        };
+    },
+
+    update: function(ctx) {
+        this.player.update();
+        this.timer++;
+        if (this.timer > 400) {
+            this.timer = 0;
+            this.player.direction++;
+            if (this.player.direction > 3)
+                this.player.direction = 0;
+        }
+        if (Controls.Enter) {
+            Controls.Enter = false;
+            Game.activate(true);
+        }
+    }
+};

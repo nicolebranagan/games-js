@@ -105,24 +105,30 @@ class Application(tk.Frame):
         viewpanel = tk.Frame(self)
         viewpanel.grid(row=2, column=1)
         self.viewcanvas = tk.Canvas(viewpanel, width=160*2, height=(144-16)*2)
-        self.viewcanvas.grid(row=0, column=0,columnspan=2)
+        self.viewcanvas.grid(row=0, column=0,columnspan=3)
         self.viewcanvasimage = self.viewcanvas.create_image(0,0,anchor=tk.NW)
         self.viewcanvas.bind("<Button-1>", self.viewclick)
         self.viewcanvas.bind("<B1-Motion>", self.viewclick)
         self.viewcanvas.bind("<Motion>", self.viewmove)
         self.viewcanvas.bind("<Button-2>", self.cviewclick)
         self.viewcanvas.bind("<Button-3>", self.rviewclick)
-        self.spinner = tk.Spinbox(viewpanel, from_=-1, to=99, 
+        self.spinner = tk.Spinbox(viewpanel, from_=-1, to=99, width=3,
                              command=lambda *x: 
                              self.room.setarea(int(self.spinner.get())))
         self.spinner.delete(0, "end")
         self.spinner.insert(0,0)
         self.spinner.grid(row=1, column=0)
+
         imagebutton = tk.Button(
             viewpanel, text="Update images", command=
             lambda: subprocess.Popen(
                 ["python3", "process.py"], cwd="../images/process/"))
         imagebutton.grid(row=1, column=1)
+
+        dumpmapbutton = tk.Button(
+            viewpanel, text="Dump map", command=
+            lambda: self.roomset.drawgrid().save("map.png"))
+        dumpmapbutton.grid(row=1, column=2)
 
         self.objectview = []
 
@@ -430,12 +436,14 @@ class Room:
     def setarea(self, x):
         self.area = x
 
-    def draw(self):
-        image = Image.new("RGB",(self.width*32, self.height*32))
+    def draw(self, image=None, top=0, left=0):
+        if image is None:
+            image = Image.new("RGB",(self.width*32, self.height*32))
         i = 0
         for y in range(0, 8):
             for x in range(0, 10):
-                image.paste(self.tileset[self.tiles[i]],(x*32, y*32))
+                image.paste(self.tileset[self.tiles[i]],(
+                    left + x*32, top + y*32))
                 i = i+1
         return image
 
@@ -482,6 +490,15 @@ class RoomGrid:
                 image.put(color, to=(i*20 + 2, j*20 + 2, 
                                          (i+1) * 20 - 2, (j+1) * 20 - 2))
 
+        return image
+
+    def drawgrid(self):
+        image = Image.new("RGB",(self.l*320, self.l*256))
+        for i in range(0, self.l):
+            for j in range(0, self.l):
+                if self.rooms[i + self.l * j] != 0:
+                    self.rooms[i + self.l * j].draw(
+                        image, left=i*320, top=j*256)
         return image
 
     def dump(self):
