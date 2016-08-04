@@ -114,7 +114,7 @@ var Game = {
         this.tileMap = worldfile.rooms[x + y * 16].tiles;
         
         // Don't change area if area == -1
-        if (worldfile.rooms[x + y * 16].area !== -1) {
+        if (worldfile.rooms[x + y * 16].area !== -1 || currentSong === "") {
             this.area = worldfile.rooms[x + y * 16].area;
             PlayMusic(this.music[this.area]);
         }

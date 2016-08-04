@@ -37,7 +37,7 @@ var creditsText = [
     "",
     "",
     "",
-    "GAME DESIGN",
+    "LEVEL DESIGN",
     "Nicole",
     "",
     "",
