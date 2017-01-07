@@ -42,7 +42,7 @@ TitleScreen.prototype = {
         drawText(ctx, 8*8, 12*8, "Continue");
         drawText(ctx, 8*8, 14*8, "Options");
         drawText(ctx, 6*8, (10 + (this.selection*2))*8, [26]);
-        drawText(ctx, 2*8, 16*8, "(c) 2016 Nicole");
+        drawText(ctx, 1*8, 16*8, "(c) 2016-7 Nicole");
     },
 };
 
@@ -181,10 +181,11 @@ var OptionsScreen = function() {
 }
 
 OptionsScreen.prototype = {
-    selection: 5,
+    selection: 7,
     currentmusic: 0,
     currentpalette: 0,
-    locations: [4*8, 6*8, 8*8, 11*8, 13*8, 16*8],
+    locations: [4*8, 5*8, 6*8, 8*8, 9*8, 11*8, 13*8, 16*8],
+    saveFailed: false,
     
     draw: function(ctx) {
         ctx.drawImage(gfx.objects, 0, 0, 16, 16, 16, 16, 16, 16);
@@ -193,13 +194,16 @@ OptionsScreen.prototype = {
         drawCenteredText(ctx, 2*8, "Options");
         
         drawText(ctx, 3*8, 4*8, saveEnabled ? "Do save game" : "Do not save game")
-        drawText(ctx, 3*8, 6*8, musicEnabled ? "Music enabled" : "Music disabled");
-        drawText(ctx, 3*8, 8*8, soundEnabled ? "Sound enabled" : "Sound disabled");
+        drawText(ctx, 3*8, 5*8, this.saveFailed ? "No save data" : "Save to file");
+        drawText(ctx, 3*8, 6*8, "Load from file");
+
+        drawText(ctx, 3*8, 8*8, musicEnabled ? "Music enabled" : "Music disabled");
+        drawText(ctx, 3*8, 9*8, soundEnabled ? "Sound enabled" : "Sound disabled");
         drawText(ctx, 3*8, 11*8, "Palette " + this.currentpalette.toString());
         drawText(ctx, 3*8, 13*8, "Sound test");
         drawText(ctx, 5*8, 14*8, this.music[this.currentmusic]);
         
-        drawText(ctx, 3*8, 16*8, "Return")
+        drawText(ctx, 3*8, 16*8, "Return     v1.1")
         
         drawText(ctx, 1*8, this.locations[this.selection], [26]);
     },
@@ -212,20 +216,35 @@ OptionsScreen.prototype = {
                 // Disable saving
                 saveEnabled = !saveEnabled;
             } else if (this.selection == 1) {
+                // Save game to file
+                var data = "";
+                if (localStorage.getItem('saved'))
+                    data = localStorage.getItem('saved');
+                else {
+                    this.saveFailed = true;
+                    return;
+                }
+                var string = btoa(data);
+                string = "data:application/octet-stream," + string;
+                newWindow = window.open(string, 'saved.sav');
+            } else if (this.selection == 2) {
+                // Load file screen
+                runner = new LoadFileScreen(this);
+            } else if (this.selection == 3) {
                 // Disable music
                 music.playMusic("");
                 musicEnabled = !musicEnabled;
-            } else if (this.selection == 2) {
+            } else if (this.selection == 4) {
                 // Disable sound
                 soundEnabled = !soundEnabled;
-            } else if (this.selection == 3) {
+            } else if (this.selection == 5) {
                 // Change palette
                 gfx.adapt(this.currentpalette);
-            } else if (this.selection == 4) {
+            } else if (this.selection == 6) {
                 // Sound test
                 music.playMusic(this.
                 music[this.currentmusic]);
-            } else if (this.selection == 5) {
+            } else if (this.selection == 7) {
                 // Return to title screen
                 runner = new TitleScreen();
             }
@@ -235,7 +254,7 @@ OptionsScreen.prototype = {
                 this.selection--;
             Controls.Up = false;
         }   else if (Controls.Down) {
-            if (this.selection != 5)
+            if (this.selection != 7)
                 this.selection++;
             Controls.Down = false;
         }
@@ -385,3 +404,89 @@ LoadingScreen.prototype = {
         }
     }
 }
+
+var LoadFileScreen = function(last) {
+    this.last = last;
+    var block = function(e) {e.preventDefault(); e.stopPropagation();}
+    window.ondragover = block;
+    window.ondrop = (ev) => {ev.preventDefault(); ev.stopPropagation(); this.drop(ev);}
+};
+
+LoadFileScreen.prototype = {
+    state: 0,
+    draw: function(ctx) {
+        if (this.state == 0) {
+            drawCenteredText(ctx, 2*8, "Drop save file here");
+            ctx.drawImage(gfx.blocks, 16*(13), 0, 16, 16, 8*9, 8*7, 16, 16);
+        } else if (this.state == 1) {
+            drawCenteredText(ctx, 2*8, "Loading...");
+            ctx.drawImage(gfx.blocks, 16*(13+5*16), 0, 16, 16, 8*9, 8*7, 16, 16);
+        } else if (this.state == 2) {
+            drawCenteredText(ctx, 2*8, "Save file loaded!");
+            ctx.drawImage(gfx.blocks, 16*(14+4*16), 0, 16, 16, 8*9, 8*7, 16, 16);
+        } else if (this.state == -1) {
+            drawCenteredText(ctx, 2*8, "Can't open file");
+            ctx.drawImage(gfx.objects, 16*15, 0, 16, 16, 8*9, 8*7, 16, 16);
+        } else if (this.state == -2) {
+            drawCenteredText(ctx, 2*8, "File is invalid");
+            ctx.drawImage(gfx.objects, 16*14, 0, 16, 16, 8*9, 8*7, 16, 16);
+        }
+        drawCenteredText(ctx, 14*8, "Press any key")
+        drawCenteredText(ctx, 15*8, "to exit")
+    },
+    update: function(ctx) {
+        if (Controls.Enter || Controls.Up || Controls.Down || Controls.Left || Controls.Right || Controls.Shoot || Controls.Reset) {
+            Controls.Enter = false;
+            Controls.Up = false;
+            Controls.Down = false;
+            Controls.Left = false;
+            Controls.Right = false;
+            Controls.Shoot = false;
+            Controls.Reset = false;
+            this.exit();
+        }
+    },
+    drop: function(ev) {
+        this.state = 1;
+        window.ondrop = null;
+        window.ondragover = null;
+        try {
+            var file = ev.dataTransfer.files[0];
+            var reader = new FileReader();
+            reader.onload = (e) => {
+                if (e.target.readyState != 2) return;
+                if (e.target.error) {
+                    this.state = -1;
+                    music.playSound("die");
+                    return;
+                }
+                this.read(e.target.result);
+            }
+            reader.readAsText(file);
+        } catch(e) {
+            this.state = -1;
+            music.playSound("die");
+            return;
+        }   
+    },
+    read: function(data) {
+        var objstring = atob(data);
+        if (!objstring.includes("aspect")) {
+            // stupid check
+            this.state = -2;
+            return;
+        }
+        try {
+            JSON.parse(objstring);
+            localStorage.setItem('saved', objstring);
+            this.state = 2;
+        } catch(e) {
+            this.state = -2;
+        };
+    },
+    exit: function() {
+        window.ondrop = null;
+        window.ondragover = null;
+        runner = this.last;
+    }
+};

@@ -28,7 +28,7 @@ function checkFPS() {
     var newfps = 1000 / (thisTime - fps.lastTime);
     fps.lastTime = thisTime;
     fps.set.push(newfps)
-    if (fps.set.length >= 60    ) {
+    if (fps.set.length >= 60) {
         fps.last = 0;
         for (var i = 0; i < fps.set.length; i++) {
             fps.last += fps.set[i];
