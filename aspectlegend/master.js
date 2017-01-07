@@ -2,7 +2,7 @@
 
 var gamecanvas = document.getElementById('gamecanvas');
 var gamecontrols = document.getElementById('gamecontrols');
-var runner = LogoScreen;
+var runner = new LoadingScreen();
 var __debug = false;
 
 function Loop() {
@@ -254,59 +254,5 @@ function drawNumber(ctx, x, y, num, len) {
 var saveEnabled = true;
 var musicEnabled = true;
 var soundEnabled = true;
-
-// Play sound effects
-var PlaySound = function(sound) {
-    if (!soundEnabled)
-        return;
-    var snd = new Audio("./sound/" + sound + ".wav");
-    snd.play();
-}
-
-// Play music
-
-var bgMusic;
-//var bgMusic.paused = false;
-var currentSong = "";
-var PlayMusic = function(sound, playOnce) {
-    if (__debug)
-        console.log(sound);
-    var loop;
-    if (playOnce)
-        loop = false;
-    else
-        loop = true;
-    if (!musicEnabled)
-        return;
-    if (currentSong === sound)
-        return;
-    if (!sound) {
-        currentSong = "";
-        if (bgMusic)
-            bgMusic.pause();
-        // Stop music if there is no argument
-        return;
-    }
-    if (bgMusic)
-        bgMusic.unload();
-    bgMusic = new Howl({
-        urls: ["./music/" + sound + ".ogg"],
-        volume: 0.6,
-        autoplay: true,
-        loop: loop,
-    });
-    bgMusic.paused = false;
-    currentSong = sound;
-}
-
-var PauseMusic = function() {
-    if (bgMusic.paused) {
-        bgMusic.paused = false
-        bgMusic.play();
-    } else {
-        bgMusic.pause();
-        bgMusic.paused = true;
-    }
-}
 
 Loop();

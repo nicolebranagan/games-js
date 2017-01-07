@@ -16,7 +16,7 @@ var Game = {
     music: ["mystery","cave","frenzy","under","right","march","firmly","bold","distance","chant"],
     
     activate: function(newgame) {
-        PlaySound("aspect");
+        music.playSound("aspect");
 
         this.reset(newgame);
         runner = this;
@@ -116,7 +116,7 @@ var Game = {
         // Don't change area if area == -1
         if (worldfile.rooms[x + y * 16].area !== -1) {
             this.area = worldfile.rooms[x + y * 16].area;
-            PlayMusic(this.music[this.area]);
+            music.playMusic(this.music[this.area]);
         }
 
         this.objects = new Array();
@@ -151,8 +151,8 @@ var Game = {
                 this.lag = 20;
                 Controls.Enter = false;
                 this.mode = GameStage.PauseMode;
-                PlaySound("pause");
-                PauseMusic();
+                music.playSound("pause");
+                music.pauseMusic();
             }
             if (Controls.Reset) {
                 Controls.Reset = false;
@@ -194,7 +194,7 @@ var Game = {
                     if (spoke) {
                         speaker.speak();
                     } else {
-                        PlaySound("pew");
+                        music.playSound("pew");
                         this.objects.push(new Projectile(this.player.x, this.player.y,  this.player.direction, this.player.aspect));
                     }
                 }
@@ -236,7 +236,7 @@ var Game = {
                     this.mode = GameStage.RunMode;
                     this.lag = 20;
                     Controls.Enter = false;
-                    PauseMusic();
+                    music.pauseMusic();
                 }
             }
         } else if (this.mode == GameStage.TextMode) {
@@ -479,7 +479,7 @@ GameObject.prototype = {
         else if (tile == 4)
             this.aspect = 2
         if (oldaspect != this.aspect)
-            PlaySound("aspect")
+            music.playSound("aspect")
     },
     
     recoil: function(x, y, dir) {
@@ -583,8 +583,8 @@ Enemy.prototype.update = function() {
 Enemy.prototype.collect = function() {
     Game.mode = GameStage.DieMode;
     Game.animCount = 512;
-    PlayMusic();
-    PlaySound("die");
+    music.playMusic();
+    music.playSound("die");
 }
 Enemy.prototype.hurt = function(aspect) {
     if (aspect == this.aspect) {
@@ -844,7 +844,7 @@ function Block(invar) {
         this.collide = function() {
             if (this.active) {
                 Game.keys++;
-                PlaySound("key");
+                music.playSound("key");
                 this.active = false;
                 this.invar[3] = false;
             }
@@ -855,7 +855,7 @@ function Block(invar) {
             if (this.active && this.splitTimer == 0) {
                 if (Game.keys > 0) {
                     Game.keys--;
-                    PlaySound("push");
+                    music.playSound("push");
                     this.invar[3] = false;
                     this.splitTimer = 8;
                 }
@@ -970,7 +970,7 @@ Block.prototype = {
             delx += 16;
         
         if (!Game.isSolid(x + delx, y + dely, this) && (!Game.isSolid(x - delx, y - dely, this)) && (x+delx >= 8 && y+delx >= 8 && x+delx <= 152 && y+dely <= 120)) {
-            PlaySound("push");
+            music.playSound("push");
             this.moveTimer = 16;
             this.dir = dir;
         } else

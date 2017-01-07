@@ -1,7 +1,7 @@
 "use strict";
 
 var TitleScreen = function() {
-    PlayMusic("title");
+    music.playMusic("title");
 };
 
 TitleScreen.prototype = {
@@ -17,7 +17,7 @@ TitleScreen.prototype = {
                 // Continue
                 var saved = localStorage.getItem('saved');
                 if (saved === null) {
-                    PlaySound("die");
+                    music.playSound("die");
                 } else {
                     Game.snapshot = JSON.parse(saved);
                     Game.activate(false);
@@ -59,7 +59,7 @@ var LogoScreen = {
             runner = new TextScreen(openingText, function() {runner = new TitleScreen()}, true);
         }
         if (this.timer == 110 || this.timer == 186)
-            PlaySound("whistle");
+            music.playSound("whistle");
         if (Controls.Enter || Controls.Shoot) {
             Controls.Shoot = false;
             Controls.Enter = false;
@@ -177,7 +177,7 @@ FlipScreen.prototype = {
 
 var OptionsScreen = function() {
     this.music = ["title"].concat(Game.music, ["spiral", "tapenade", "phasic"]);
-    PlayMusic("");
+    music.playMusic("");
 }
 
 OptionsScreen.prototype = {
@@ -213,7 +213,7 @@ OptionsScreen.prototype = {
                 saveEnabled = !saveEnabled;
             } else if (this.selection == 1) {
                 // Disable music
-                PlayMusic("");
+                music.playMusic("");
                 musicEnabled = !musicEnabled;
             } else if (this.selection == 2) {
                 // Disable sound
@@ -223,7 +223,7 @@ OptionsScreen.prototype = {
                 gfx.adapt(this.currentpalette);
             } else if (this.selection == 4) {
                 // Sound test
-                PlayMusic(this.
+                music.playMusic(this.
                 music[this.currentmusic]);
             } else if (this.selection == 5) {
                 // Return to title screen
@@ -275,7 +275,7 @@ EndScreen.prototype = {
     update: function() {
         this.timer++;
         if (this.timer > 100) {
-            PlayMusic("where", true);
+            music.playMusic("where");
             this.phrase = ["Hello?", ""];
         }
         if (this.timer > 670)
@@ -283,7 +283,7 @@ EndScreen.prototype = {
         if (this.timer > 1300)
             this.phrase = ["", ""];
         if (this.timer > 1500) {
-            PlayMusic("phasic");
+            music.playMusic("phasic");
             runner = new TextScreen(creditsText, function() {;}, false);
         }
     },
@@ -305,7 +305,7 @@ EndScreen.prototype = {
 }
 
 var ControlsScreen = function() {
-    PlayMusic("");
+    music.playMusic("");
     this.player = new GameObject();
     this.player.animate = true;
     this.player.x = 32;
@@ -360,3 +360,28 @@ ControlsScreen.prototype = {
         }
     }
 };
+
+var LoadingScreen = function() {
+    this.timer = 0;
+};
+LoadingScreen.prototype = {
+    draw: function(ctx) {
+        drawCenteredText(ctx, 8*8, "Loading...");
+    },
+
+    update: function(ctx) {
+        if (this.timer < 2) 
+            this.timer++;
+        else if (this.timer == 2) {
+            music.initialize();
+            this.timer++;
+        } else if (this.timer == 3) {
+            if (Object.keys(music.data).length == 25)
+                this.timer++;
+        } else if (this.timer > 3) {
+            this.timer++;
+            if (this.timer == 150)
+                runner = LogoScreen;
+        }
+    }
+}

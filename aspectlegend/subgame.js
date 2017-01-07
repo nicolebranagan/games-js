@@ -32,9 +32,9 @@ Subgame.prototype = {
     
     playMusic: function() {
         if (this.stage == 3)
-            PlayMusic("spiral");
+            music.playMusic("spiral");
         else
-            PlayMusic("bold");
+            music.playMusic("bold");
     },
     
     getStage: function(index) {
@@ -79,7 +79,7 @@ Subgame.prototype = {
         if (this.paused) {
             if (Controls.Enter) {
                 Controls.Enter = false;
-                PauseMusic();
+                music.pauseMusic();
                 this.paused = false;
             }
             return;
@@ -100,7 +100,7 @@ Subgame.prototype = {
             if (Controls.Enter) {
                 this.paused = true;
                 Controls.Enter = false;
-                PauseMusic();
+                music.pauseMusic();
             }
         }
             
@@ -196,8 +196,8 @@ Subgame.prototype = {
             return;
         this.objects.push(new Explosion(this.player.x, this.player.y));
         this.deathCount = 100;
-        PlayMusic("");
-        PlaySound("die");
+        music.playMusic("");
+        music.playSound("die");
     },
     
     dieFunc: function() {
@@ -227,7 +227,7 @@ Subgame.prototype = {
             
             if (Controls.Shoot) {
                 Controls.Shoot = false;
-                PlaySound("pew");
+                music.playSound("pew");
                 this.parent.objects.push(new SubgameProjectile(this.parent, true, this.x, this.y));
             }
             
@@ -587,7 +587,7 @@ SubgameBoss.prototype = {
                     e.active = false;
             }
             this.parent.textBox(["I am just doing...", "as I was designed..."]);
-            PlayMusic("mystery");
+            music.playMusic("mystery");
             this.phaseTimer = 0;
             this.phase = 3;
         }

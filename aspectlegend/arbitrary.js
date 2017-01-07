@@ -99,7 +99,7 @@ var Arbitrary = function(invar) {
             if (this.lag > 0) {
                 this.lag--;
                 if (this.lag == 0)
-                    PlaySound("crystal");
+                    music.playSound("crystal");
             }
             if (Game.crystals === 3)
                 this.text = ["You should examine the abandoned garrison to the south.", "Perhaps there's another crystal there.", "Or perhaps you'll die there."];            
@@ -224,7 +224,7 @@ var Arbitrary = function(invar) {
     } else if (invar[0] == 239) {
         Game.objects.push(getTalkOnEnter(invar, ["\"That was like a place where you would see a boss...", "But it was empty?\"", "[It's all collapsed. The world can't handle any more objects.]"]));
     } else if (invar[0] == 240) {
-        PlayMusic("tapenade");
+        music.playMusic("tapenade");
     } else if (invar[0] == 241) {
         getEnding(invar);
     } else if (invar[0] == 242) {
@@ -238,8 +238,8 @@ var Arbitrary = function(invar) {
         portal.timer = 300;
         portal.collect = function() {
             if (this.running) {
-                PlayMusic("");
-                PlaySound("crystal");
+                music.playMusic("");
+                music.playSound("crystal");
                 Game.player.frozen = true;
                 this.running = false;
                 this.timer = 299;
@@ -288,7 +288,7 @@ arbKillAll.prototype = {
     update: function() {
         if (this.active && !this.needKey) {
             if (this.check()) {
-                PlaySound("appear");
+                music.playSound("appear");
                 Game.blocks.push(new Block(this.reward));
                 this.needKey = true;
             }
@@ -425,7 +425,7 @@ wideDoor.prototype = {
     },
     
     open: function() {
-        PlaySound("push");
+        music.playSound("push");
         this.invar[3] = false;
         this.splitTimer = 15;
     }
@@ -529,7 +529,7 @@ var getCrystal = function(invar) {
             if (this.drawCount == 4) this.drawCount = 0;
             this.lag = 15;
             if (this.invar[3] == false) {
-                PlaySound("crystal");
+                music.playSound("crystal");
                 this.active = false;
             }
         }
@@ -693,7 +693,7 @@ blockDoor.prototype = {
             }
         }
         this.door.open()
-        PlaySound("appear");
+        music.playSound("appear");
         this.active = false;
         this.invar[3] = false;
     }
@@ -728,7 +728,7 @@ stallDoor.prototype = {
     },
     
     activate: function() {
-        PlaySound("push");
+        music.playSound("push");
         var door;
         if (this.block) {
             door = new blockDoor(this.invar, this.horz);
@@ -749,7 +749,7 @@ var oneUseAspect = function(invar, aspect) {
     block.collide = function() {
         if (this.active && this.splitTimer == 0) {
             if (this.aspect != Game.player.aspect) {
-                PlaySound("aspect");
+                music.playSound("aspect");
                 Game.player.aspect = this.aspect;
             }
             this.splitTimer = 8;
@@ -782,7 +782,7 @@ var getEnding = function(invar) {
     cat.timer = 4;
     cat.update = function() {
         if (this.y < 16*3) {
-            PlaySound("crystal");
+            music.playSound("crystal");
             this.active = false;
         }
         if (!this.moving && this.timer < 4) {
